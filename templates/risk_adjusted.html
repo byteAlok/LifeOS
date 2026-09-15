@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Risk-adjusted decision analysis for LifeOS"
+    >
+
+    <title>Risk-Adjusted Analysis | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/risk_adjusted.css') }}"
+    >
+
+    <script
+    src="{{ url_for('static', filename='js/risk_adjusted.js') }}"
+    defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('risk_analysis.manage_risk_analysis', decision_id=decision.id) }}"
+            class="nav-back"
+        >
+            ← Risk Analysis
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="page-container">
+
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 05 · RISK-ADJUSTED ANALYSIS
+            </span>
+
+            <h1>
+                Balance reward with risk.
+            </h1>
+
+            <p>
+                LifeOS adjusts each option's weighted score
+                according to the risk you identified.
+            </p>
+
+        </section>
+
+
+
+        <!-- ================= DECISION CONTEXT ================= -->
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div class="context-content">
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+                {% if decision.category %}
+
+                    <small>
+                        {{ decision.category }}
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= RECOMMENDATION ================= -->
+
+        <section class="recommendation-card">
+
+            <div class="recommendation-icon">
+                ✓
+            </div>
+
+
+            <div class="recommendation-content">
+
+                <span class="recommendation-label">
+                    RISK-ADJUSTED RECOMMENDATION
+                </span>
+
+                <h2>
+                    {{ recommended_option.option_name }}
+                </h2>
+
+                <p>
+                    This option has the highest score after
+                    accounting for the assessed risk.
+                </p>
+
+            </div>
+
+
+            <div class="recommendation-score">
+
+                <strong>
+                    {{ "%.2f"|format(
+                        recommended_option.risk_adjusted_score
+                    ) }}
+                </strong>
+
+                <span>
+                    / 10
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= EXPLANATION ================= -->
+
+        <section class="explanation-card">
+
+            <div class="explanation-icon">
+                ✦
+            </div>
+
+
+            <div>
+
+                <span class="section-label">
+                    HOW LIFEOS CALCULATED THIS
+                </span>
+
+                <h2>
+                    Risk-adjusted decision scoring
+                </h2>
+
+                <p>
+                    LifeOS starts with the weighted decision score
+                    and reduces it according to the assessed risk.
+                    A higher risk therefore lowers the final
+                    risk-adjusted score.
+                </p>
+
+
+                <div class="formula">
+
+                    <span>
+                        Risk-Adjusted Score
+                    </span>
+
+                    <strong>
+                        =
+                    </strong>
+
+                    <span>
+                        Weighted Score ×
+                        (1 − Risk Score / 100)
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= RESULTS ================= -->
+
+        <section class="results-card">
+
+
+            <div class="results-header">
+
+                <div>
+
+                    <span class="section-label">
+                        OPTION COMPARISON
+                    </span>
+
+                    <h2>
+                        How risk changes the ranking
+                    </h2>
+
+                    <p>
+                        Compare the original score with the
+                        risk-adjusted result.
+                    </p>
+
+                </div>
+
+
+                <div class="result-count">
+
+                    {{ results|length }}
+
+                    <span>
+                        options
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= RESULT LIST ================= -->
+
+            <div class="results-list">
+
+
+                {% for result in results %}
+
+                    <article
+                        class="
+                            result-item
+                            {% if result.rank == 1 %}
+                                recommended
+                            {% endif %}
+                        "
+                    >
+
+
+                        <!-- RANK -->
+
+                        <div class="rank-badge">
+
+                            {{ "%02d"|format(result.rank) }}
+
+                        </div>
+
+
+
+                        <!-- MAIN CONTENT -->
+
+                        <div class="result-main">
+
+
+                            <div class="result-title-row">
+
+                                <h3>
+                                    {{ result.option_name }}
+                                </h3>
+
+
+                                {% if result.rank == 1 %}
+
+                                    <span class="recommended-badge">
+                                        Recommended
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if result.description %}
+
+                                <p class="result-description">
+                                    {{ result.description }}
+                                </p>
+
+                            {% endif %}
+
+
+
+                            <!-- SCORE METRICS -->
+
+                            <div class="metrics">
+
+
+                                <div class="metric">
+
+                                    <span>
+                                        Weighted Score
+                                    </span>
+
+                                    <strong>
+                                        {{ "%.2f"|format(
+                                            result.weighted_score
+                                        ) }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="metric">
+
+                                    <span>
+                                        Risk Probability
+                                    </span>
+
+                                    <strong>
+                                        {{ "%.1f"|format(
+                                            result.probability
+                                        ) }}%
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="metric">
+
+                                    <span>
+                                        Risk Impact
+                                    </span>
+
+                                    <strong>
+                                        {{ "%.1f"|format(
+                                            result.impact
+                                        ) }}
+                                        / 10
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="metric risk">
+
+                                    <span>
+                                        Risk Score
+                                    </span>
+
+                                    <strong>
+                                        {{ "%.2f"|format(
+                                            result.risk_score
+                                        ) }}%
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- SCORE COMPARISON -->
+
+                            <div class="score-comparison">
+
+
+                                <div class="score-label-row">
+
+                                    <span>
+                                        Risk-adjusted score
+                                    </span>
+
+                                    <strong>
+                                        {{ "%.2f"|format(
+                                            result.risk_adjusted_score
+                                        ) }}
+                                        / 10
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="score-track">
+
+                                    <div
+                                        class="score-fill"
+                                        data-score="{{ result.risk_adjusted_score }}"
+                                    ></div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- FINAL SCORE -->
+
+                        <div class="final-score">
+
+                            <strong>
+                                {{ "%.2f"|format(
+                                    result.risk_adjusted_score
+                                ) }}
+                            </strong>
+
+                            <span>
+                                / 10
+                            </span>
+
+                        </div>
+
+
+                    </article>
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= DECISION INSIGHT ================= -->
+
+        <section class="insight-card">
+
+            <div class="insight-icon">
+                ✦
+            </div>
+
+
+            <div class="insight-content">
+
+                <span class="section-label">
+                    DECISION INTELLIGENCE
+                </span>
+
+                <h2>
+                    What this means
+                </h2>
+
+                <p>
+
+                    The highest weighted score is not automatically
+                    the safest choice. LifeOS considers both the
+                    potential value and the risk assessment to
+                    produce a more balanced ranking.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FOOTER ACTIONS ================= -->
+
+        <section class="page-actions">
+
+
+            <a
+                href="{{ url_for(
+                    'risk_analysis.manage_risk_analysis',
+                    decision_id=decision.id
+                ) }}"
+                class="back-btn"
+            >
+                ← Edit Risk Analysis
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'what_if.what_if_analysis',
+                    decision_id=decision.id
+                ) }}"
+                class="continue-btn"
+            >
+                Continue to What-If Analysis
+
+                <span>
+                    →
+                </span>
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Decision Stability | LifeOS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/sensitivity.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-content">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('decisions.create_decision') }}"
+                class="nav-item"
+            >
+                <span>＋</span>
+                New Decision
+            </a>
+
+
+            <a
+                href="{{ url_for('analytics.dashboard') }}"
+                class="nav-item"
+            >
+                <span>▥</span>
+                Analytics
+            </a>
+
+
+            <a
+                href="{{ url_for('history.decision_history') }}"
+                class="nav-item"
+            >
+                <span>◷</span>
+                History
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    {{ session.get("user_name", "U")[0]|upper }}
+                </div>
+
+                <div class="user-info">
+
+                    <strong>
+                        {{ session.get("user_name", "User") }}
+                    </strong>
+
+                    <span>
+                        {{ session.get("user_email", "") }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-link"
+            >
+                ↪ Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+
+        <!-- Page Header -->
+
+        <header class="page-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    DECISION INTELLIGENCE
+                </span>
+
+                <h1>
+                    Decision Stability
+                </h1>
+
+                <p>
+                    Test how sensitive your recommendation is
+                    to changes in your assumptions.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for(
+                    'decisions.decision_summary',
+                    decision_id=decision.id
+                ) }}"
+                class="secondary-button"
+            >
+                ← Final Summary
+            </a>
+
+        </header>
+
+
+        <!-- Decision Identity -->
+
+        <section class="decision-identity">
+
+            <div class="decision-icon">
+                ◇
+            </div>
+
+            <div>
+
+                <span>
+                    {{ decision.category or "General Decision" }}
+                </span>
+
+                <h2>
+                    {{ decision.title }}
+                </h2>
+
+                {% if decision.description %}
+
+                    <p>
+                        {{ decision.description }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- Stability Overview -->
+
+        <section class="overview-grid">
+
+
+            <!-- Current Recommendation -->
+
+            <article class="overview-card recommendation-card">
+
+                <div class="card-label">
+                    CURRENT RECOMMENDATION
+                </div>
+
+                <div class="recommendation-name">
+                    {{ baseline_winner.name }}
+                </div>
+
+                <p>
+                    Highest risk-adjusted score under
+                    your current assumptions.
+                </p>
+
+            </article>
+
+
+            <!-- Overall Stability -->
+
+            <article class="overview-card">
+
+                <div class="card-label">
+                    STABILITY
+                </div>
+
+                <div
+                    class="stability-value
+                    {% if stability == 'Stable' %}
+                        stable
+                    {% elif stability == 'Moderate' %}
+                        moderate
+                    {% else %}
+                        fragile
+                    {% endif %}"
+                >
+
+                    <span class="stability-dot"></span>
+
+                    {{ stability }}
+
+                </div>
+
+                <p>
+                    How resistant the recommendation is
+                    to score changes.
+                </p>
+
+            </article>
+
+
+            <!-- Closest Switch -->
+
+            <article class="overview-card">
+
+                <div class="card-label">
+                    CLOSEST SWITCH
+                </div>
+
+
+                {% if overall_switch is not none %}
+
+                    <div class="switch-value">
+
+                        {{ "%.1f"|format(
+                            overall_switch
+                        ) }}
+
+                    </div>
+
+                    <p>
+                        Approximate score change needed
+                        to alter the recommendation.
+                    </p>
+
+                {% else %}
+
+                    <div class="switch-value">
+                        —
+                    </div>
+
+                    <p>
+                        No recommendation switch detected
+                        within the tested range.
+                    </p>
+
+                {% endif %}
+
+            </article>
+
+        </section>
+
+
+        <!-- Baseline -->
+
+        <section class="section-block">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        BASELINE
+                    </span>
+
+                    <h2>
+                        Current Decision Position
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="baseline-grid">
+
+                {% for result in baseline %}
+
+                    <article
+                        class="baseline-card
+                        {% if result.id == baseline_winner.id %}
+                            winner
+                        {% endif %}"
+                    >
+
+                        <div class="rank-badge">
+                            #{{ result.rank }}
+                        </div>
+
+
+                        <div class="baseline-content">
+
+                            <h3>
+                                {{ result.name }}
+                            </h3>
+
+
+                            <div class="score-line">
+
+                                <span>
+                                    Weighted Score
+                                </span>
+
+                                <strong>
+                                    {{ "%.2f"|format(
+                                        result.weighted_score
+                                    ) }}
+                                    / 10
+                                </strong>
+
+                            </div>
+
+
+                            <div class="score-line">
+
+                                <span>
+                                    Risk
+                                </span>
+
+                                <strong>
+                                    {{ "%.0f"|format(
+                                        result.risk_score
+                                    ) }}%
+                                </strong>
+
+                            </div>
+
+
+                            <div class="score-line emphasis">
+
+                                <span>
+                                    Risk-adjusted
+                                </span>
+
+                                <strong>
+                                    {{ "%.2f"|format(
+                                        result.risk_adjusted_score
+                                    ) }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <!-- Sensitivity Test -->
+
+        <section class="section-block">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        SENSITIVITY TEST
+                    </span>
+
+                    <h2>
+                        How Stable Is Your Recommendation?
+                    </h2>
+
+                    <p>
+                        LifeOS tests controlled score changes
+                        while keeping your saved decision unchanged.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% for item in sensitivity_results %}
+
+                <article class="sensitivity-card">
+
+
+                    <!-- Sensitivity Header -->
+
+                    <div class="sensitivity-header">
+
+                        <div>
+
+                            <span class="option-label">
+                                OPTION
+                            </span>
+
+                            <h3>
+                                {{ item.name }}
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="mini-stability
+                            {% if item.stability == 'Stable' %}
+                                stable
+                            {% elif item.stability == 'Moderate' %}
+                                moderate
+                            {% else %}
+                                fragile
+                            {% endif %}"
+                        >
+
+                            <span></span>
+
+                            {{ item.stability }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Sensitivity Scale -->
+
+                    <div class="sensitivity-scale">
+
+                        {% for test in item.tests %}
+
+                            <div
+                                class="scale-point
+                                {% if test.changed %}
+                                    changed
+                                {% elif test.change == 0 %}
+                                    current
+                                {% endif %}"
+                            >
+
+                                <div class="point-dot"></div>
+
+                                <span>
+
+                                    {% if test.change > 0 %}
+
+                                        +{{ "%.1f"|format(
+                                            test.change
+                                        ) }}
+
+                                    {% else %}
+
+                                        {{ "%.1f"|format(
+                                            test.change
+                                        ) }}
+
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Sensitivity Table -->
+
+                    <div class="sensitivity-table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Score Change
+                                    </th>
+
+                                    <th>
+                                        Recommendation
+                                    </th>
+
+                                    <th>
+                                        Result
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for test in item.tests %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            {% if test.change > 0 %}
+
+                                                +{{ "%.1f"|format(
+                                                    test.change
+                                                ) }}
+
+                                            {% else %}
+
+                                                {{ "%.1f"|format(
+                                                    test.change
+                                                ) }}
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <td>
+                                            {{ test.recommendation }}
+                                        </td>
+
+
+                                        <td>
+
+                                            {% if test.changed %}
+
+                                                <span
+                                                    class="result changed"
+                                                >
+                                                    Recommendation changed
+                                                </span>
+
+                                            {% else %}
+
+                                                <span
+                                                    class="result stable"
+                                                >
+                                                    Same recommendation
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- Switch Message -->
+
+                    {% if item.closest_switch is not none %}
+
+                        <div class="switch-message">
+
+                            <span>
+                                ◈
+                            </span>
+
+                            Recommendation becomes sensitive
+                            around a score change of
+
+                            <strong>
+                                {{ "%.1f"|format(
+                                    item.closest_switch
+                                ) }}
+                            </strong>
+
+                        </div>
+
+                    {% else %}
+
+                        <div
+                            class="switch-message stable-message"
+                        >
+
+                            <span>
+                                ✓
+                            </span>
+
+                            No recommendation switch was detected
+                            within the tested score range.
+
+                        </div>
+
+                    {% endif %}
+
+                </article>
+
+            {% endfor %}
+
+        </section>
+
+
+        <!-- LifeOS Intelligence -->
+
+        <section class="intelligence-card">
+
+            <div class="intelligence-icon">
+                ✦
+            </div>
+
+
+            <div>
+
+                <span>
+                    LIFEOS INTELLIGENCE
+                </span>
+
+
+                {% if stability == "Stable" %}
+
+                    <h2>
+                        Your recommendation is relatively stable.
+                    </h2>
+
+                    <p>
+                        The tested score changes did not easily
+                        overturn the current recommendation.
+                        This means the decision has reasonable
+                        resistance to moderate assumption changes.
+                    </p>
+
+
+                {% elif stability == "Moderate" %}
+
+                    <h2>
+                        Your recommendation has moderate stability.
+                    </h2>
+
+                    <p>
+                        The recommendation can change when some
+                        assumptions move significantly. Review the
+                        most influential criteria before making a
+                        final decision.
+                    </p>
+
+
+                {% else %}
+
+                    <h2>
+                        Your recommendation is sensitive.
+                    </h2>
+
+                    <p>
+                        Small changes in the assumptions can change
+                        the recommended option. Consider collecting
+                        better evidence before treating this result
+                        as a strong conclusion.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- Actions -->
+
+        <section class="page-actions">
+
+            <a
+                href="{{ url_for(
+                    'decisions.decision_summary',
+                    decision_id=decision.id
+                ) }}"
+                class="secondary-button"
+            >
+                ← Final Summary
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'history.decision_history'
+                ) }}"
+                class="primary-button"
+            >
+                Decision History →
+            </a>
+
+        </section>
+
+
+    </main>
+
+</body>
+
+</html>

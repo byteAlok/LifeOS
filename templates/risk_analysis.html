@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Analyze decision risks with LifeOS"
+    >
+
+    <title>Risk Analysis | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/risk_analysis.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('analysis.decision_analysis', decision_id=decision.id) }}"
+            class="back-link"
+        >
+            ← Analysis
+        </a>
+
+    </nav>
+
+
+
+    <main class="risk-page">
+
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 04 · RISK ANALYSIS
+            </span>
+
+            <h1>
+                What could go wrong?
+            </h1>
+
+            <p>
+                Evaluate the probability and impact of risks
+                associated with each option.
+            </p>
+
+        </section>
+
+
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div>
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="alert {{ category }}">
+
+                            <span>
+                                {% if category == "success" %}
+                                    ✓
+                                {% else %}
+                                    !
+                                {% endif %}
+                            </span>
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <section class="risk-card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="section-label">
+                        RISK ASSESSMENT
+                    </span>
+
+                    <h2>
+                        Evaluate each option
+                    </h2>
+
+                    <p>
+                        Estimate how likely the risk is and how serious
+                        its impact would be.
+                    </p>
+
+                </div>
+
+                <div class="scale-badge">
+                    0–100%
+                </div>
+
+            </div>
+
+
+
+            <div class="risk-guide">
+
+                <div class="guide-icon">
+                    ✦
+                </div>
+
+                <div>
+
+                    <strong>
+                        How risk scoring works
+                    </strong>
+
+                    <p>
+                        Probability represents the chance of the risk
+                        occurring. Impact represents how serious the
+                        consequence would be on a scale from 0 to 10.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <form
+                method="POST"
+                action="{{ url_for('risk_analysis.manage_risk_analysis', decision_id=decision.id) }}"
+            >
+
+
+                <div class="options-list">
+
+
+                    {% for option in options %}
+
+                        <article class="option-card">
+
+
+                            <div class="option-header">
+
+                                <div class="option-number">
+                                    {{ "%02d"|format(loop.index) }}
+                                </div>
+
+
+                                <div class="option-info">
+
+                                    <h3>
+                                        {{ option.option_name }}
+                                    </h3>
+
+                                    {% if option.description %}
+
+                                        <p>
+                                            {{ option.description }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="risk-inputs">
+
+
+                                <div class="risk-input-group">
+
+                                    <label
+                                        for="probability_{{ option.id }}"
+                                    >
+                                        Risk Probability
+                                    </label>
+
+                                    <p>
+                                        Chance of this risk occurring.
+                                    </p>
+
+                                    <div class="input-wrapper">
+
+                                        <input
+                                            type="number"
+                                            id="probability_{{ option.id }}"
+                                            name="probability_{{ option.id }}"
+                                            min="0"
+                                            max="100"
+                                            step="0.01"
+                                            value="{% if option.probability is not none %}{{ option.probability }}{% endif %}"
+                                            placeholder="30"
+                                            required
+                                        >
+
+                                        <span>
+                                            %
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="risk-input-group">
+
+                                    <label
+                                        for="impact_{{ option.id }}"
+                                    >
+                                        Risk Impact
+                                    </label>
+
+                                    <p>
+                                        Severity if the risk occurs.
+                                    </p>
+
+                                    <div class="input-wrapper">
+
+                                        <input
+                                            type="number"
+                                            id="impact_{{ option.id }}"
+                                            name="impact_{{ option.id }}"
+                                            min="0"
+                                            max="10"
+                                            step="0.1"
+                                            value="{% if option.impact is not none %}{{ option.impact }}{% endif %}"
+                                            placeholder="5"
+                                            required
+                                        >
+
+                                        <span>
+                                            / 10
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="risk-result">
+
+                                    <span>
+                                        RISK SCORE
+                                    </span>
+
+                                    {% if option.risk_score is not none %}
+
+                                        <strong>
+                                            {{ "%.2f"|format(option.risk_score) }}
+                                        </strong>
+
+                                        <small>
+                                            / 100
+                                        </small>
+
+                                    {% else %}
+
+                                        <strong>
+                                            —
+                                        </strong>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                            </div>
+
+
+                        </article>
+
+                    {% endfor %}
+
+
+                </div>
+
+
+
+                <div class="formula-card">
+
+                    <span>
+                        Risk Score
+                    </span>
+
+                    <strong>
+                        Probability × Impact ÷ 10
+                    </strong>
+
+                    <small>
+                        Probability is normalized from 0–100%.
+                    </small>
+
+                </div>
+
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="{{ url_for('analysis.decision_analysis', decision_id=decision.id) }}"
+                        class="back-btn"
+                    >
+                        ← Back to Analysis
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Save Risk Analysis
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+        <section class="intelligence-note">
+
+            <div class="note-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <strong>
+                    Decision Intelligence
+                </strong>
+
+                <p>
+                    LifeOS uses risk as a separate signal from the
+                    weighted score. A high-scoring option can still
+                    require caution when its risk exposure is high.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

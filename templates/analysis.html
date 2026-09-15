@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Decision Analysis | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/analysis.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', filename='js/analysis.js') }}"
+        defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('scoring.manage_scoring', decision_id=decision.id) }}"
+            class="back-link"
+        >
+            ← Scoring
+        </a>
+
+    </nav>
+
+
+
+    <main class="analysis-page">
+
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 04 · ANALYSIS
+            </span>
+
+            <h1>
+                Your decision analysis
+            </h1>
+
+            <p>
+                LifeOS combined your scores and importance
+                weights to compare the available options.
+            </p>
+
+        </section>
+
+
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div>
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="winner-card">
+
+            <div class="winner-icon">
+                ✓
+            </div>
+
+            <div class="winner-content">
+
+                <span>
+                    TOP-RANKED OPTION
+                </span>
+
+                <h2>
+                    {{ winner.name }}
+                </h2>
+
+                <p>
+                    Based on the scores and importance weights
+                    you provided.
+                </p>
+
+            </div>
+
+
+            <div class="winner-score">
+
+                <strong>
+                    {{ "%.2f"|format(winner.weighted_score) }}
+                </strong>
+
+                <span>
+                    / 10
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="results-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="section-label">
+                        OPTION RANKING
+                    </span>
+
+                    <h2>
+                        How the options compare
+                    </h2>
+
+                </div>
+
+                <div class="weight-status">
+                    {{ "%.0f"|format(total_weight) }}% weighted
+                </div>
+
+            </div>
+
+
+
+            <div class="results-list">
+
+
+                {% for result in results %}
+
+                    <article
+                        class="
+                            result-item
+                            {% if result.rank == 1 %}
+                                winner
+                            {% endif %}
+                        "
+                    >
+
+
+                        <div class="rank">
+                            {{ "%02d"|format(result.rank) }}
+                        </div>
+
+
+                        <div class="result-main">
+
+                            <div class="result-title-row">
+
+                                <h3>
+                                    {{ result.name }}
+                                </h3>
+
+                                {% if result.rank == 1 %}
+
+                                    <span class="winner-badge">
+                                        Recommended
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if result.description %}
+
+                                <p>
+                                    {{ result.description }}
+                                </p>
+
+                            {% endif %}
+
+
+                            <div class="score-bar">
+
+                                <div
+                                    class="score-fill"
+                                    data-percentage="{{ result.percentage }}"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="result-score">
+
+                            <strong>
+                                {{ "%.2f"|format(result.weighted_score) }}
+                            </strong>
+
+                            <span>
+                                / 10
+                            </span>
+
+                        </div>
+
+
+                    </article>
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+
+
+        <section class="explanation-card">
+
+            <div class="explanation-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    HOW LIFEOS CALCULATED THIS
+                </span>
+
+                <h2>
+                    Weighted decision scoring
+                </h2>
+
+                <p>
+                    Each option receives a score from 0 to 10
+                    for every criterion. LifeOS multiplies each
+                    score by that criterion's importance weight,
+                    divides the contribution by 100, and combines
+                    all contributions into a final weighted score.
+                </p>
+
+                <div class="formula">
+                    Weighted Score = Σ (Score × Weight ÷ 100)
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="page-actions">
+
+            <a
+                href="{{ url_for('scoring.manage_scoring', decision_id=decision.id) }}"
+                class="edit-scores-btn"
+            >
+                ← Edit Scores
+            </a>
+
+
+            <a
+                href="{{ url_for('risk_analysis.manage_risk_analysis', decision_id=decision.id) }}"
+                class="continue-btn"
+            >
+                <span>Continue to Risk Analysis</span>
+                <span class="continue-arrow">→</span>
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

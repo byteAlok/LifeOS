@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="LifeOS decision overview"
+    >
+
+    <title>
+        {{ decision.title }} | LifeOS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/decision.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-link"
+        >
+            ← Dashboard
+        </a>
+
+    </nav>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="decision-page">
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <header class="page-header">
+
+            <span class="eyebrow">
+                DECISION INTELLIGENCE
+            </span>
+
+            <h1>
+                {{ decision.title }}
+            </h1>
+
+            <p>
+                Structure your decision, evaluate alternatives,
+                understand risk, and test the stability of the result.
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             MAIN DECISION CARD
+        ================================================== -->
+
+        <section class="decision-card">
+
+
+            <!-- =================================================
+                 DECISION TIP
+            ================================================== -->
+
+            <div class="decision-tip">
+
+                <div class="tip-icon">
+                    ✦
+                </div>
+
+
+                <div class="tip-content">
+
+                    <strong>
+                        {% if current_step == "options" %}
+
+                            Start with your options
+
+                        {% elif current_step == "criteria" %}
+
+                            Define what matters
+
+                        {% elif current_step == "scoring" %}
+
+                            Score your alternatives
+
+                        {% elif current_step == "risk" %}
+
+                            Evaluate decision risk
+
+                        {% else %}
+
+                            Core analysis is ready
+
+                        {% endif %}
+                    </strong>
+
+
+                    <p>
+
+                        {% if current_step == "options" %}
+
+                            Add at least two alternatives
+                            before LifeOS can compare them.
+
+                        {% elif current_step == "criteria" %}
+
+                            Define the factors that matter
+                            and assign their importance.
+
+                        {% elif current_step == "scoring" %}
+
+                            Rate each option against
+                            every selected criterion.
+
+                        {% elif current_step == "risk" %}
+
+                            Evaluate probability and impact
+                            for each option.
+
+                        {% else %}
+
+                            Your structured data is ready
+                            for risk-adjusted decision analysis.
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PROGRESS
+            ================================================== -->
+
+            <div class="progress-section">
+
+                <div class="progress-header">
+
+                    <span>
+                        CORE ANALYSIS PROGRESS
+                    </span>
+
+                    <strong>
+                        {{ progress }}%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                        class="progress-fill"
+                        data-progress="{{ progress }}"
+                    ></div>
+
+                </div>
+
+
+                <div class="progress-caption">
+
+                    {% if current_step == "options" %}
+
+                        Step 1 of the core analysis
+
+                    {% elif current_step == "criteria" %}
+
+                        Step 2 of the core analysis
+
+                    {% elif current_step == "scoring" %}
+
+                        Step 3 of the core analysis
+
+                    {% elif current_step == "risk" %}
+
+                        Step 4 of the core analysis
+
+                    {% else %}
+
+                        Core data pipeline complete.
+                        Advanced analysis is now available.
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 DECISION DETAILS
+            ================================================== -->
+
+            <div class="details-section">
+
+                <div class="section-label">
+                    DECISION DETAILS
+                </div>
+
+
+                <div class="category-row">
+
+                    <span class="detail-label">
+                        Category
+                    </span>
+
+                    <span class="category-badge">
+                        {{ decision.category or "Not specified" }}
+                    </span>
+
+                </div>
+
+
+                <div class="description-block">
+
+                    <span class="detail-label">
+                        Description
+                    </span>
+
+
+                    <p>
+
+                        {% if decision.description %}
+
+                            {{ decision.description }}
+
+                        {% else %}
+
+                            No description provided.
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+                <div class="meta-row">
+
+                    <div>
+
+                        <span class="detail-label">
+                            Status
+                        </span>
+
+                        <strong>
+                            {{ decision.status }}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-label">
+                            Created
+                        </span>
+
+                        <strong>
+
+                            {{ decision.created_at.strftime(
+                                '%d %b %Y'
+                            ) }}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <span>
+                        OPTIONS
+                    </span>
+
+                    <strong>
+                        {{ option_count }}
+                    </strong>
+
+                    <small>
+                        {{ "Ready" if options_complete else "Need 2+" }}
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        CRITERIA
+                    </span>
+
+                    <strong>
+                        {{ criteria_count }}
+                    </strong>
+
+                    <small>
+                        {{ "%.0f"|format(total_weight) }}% weighted
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        SCORES
+                    </span>
+
+                    <strong>
+                        {{ score_count }}
+                    </strong>
+
+                    <small>
+                        {{ score_count }}/{{ expected_scores }}
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        RISKS
+                    </span>
+
+                    <strong>
+                        {{ risk_count }}
+                    </strong>
+
+                    <small>
+                        {{ risk_count }}/{{ option_count }}
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =====================================================
+             DECISION WORKFLOW
+        ====================================================== -->
+
+        <section class="workflow-section">
+
+
+            <div class="workflow-heading">
+
+                <div>
+
+                    <span class="workflow-label">
+                        LIFEOS WORKFLOW
+                    </span>
+
+                    <h2>
+                        Decision Analysis Journey
+                    </h2>
+
+                    <p>
+                        Complete the core data stages first,
+                        then explore advanced decision intelligence.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="workflow-track">
+
+
+                <!-- =================================================
+                     STEP 01
+                ================================================== -->
+
+                <article class="workflow-step completed">
+
+                    <div class="workflow-node">
+                        ✓
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Decision
+                        </strong>
+
+                        <span>
+                            Created
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- =================================================
+                     STEP 02
+                ================================================== -->
+
+                <article
+                    class="workflow-step
+                    {% if options_complete %}
+                        completed
+                    {% elif current_step == 'options' %}
+                        current
+                    {% else %}
+                        locked
+                    {% endif %}"
+                >
+
+                    <div class="workflow-node">
+
+                        {% if options_complete %}
+                            ✓
+                        {% else %}
+                            02
+                        {% endif %}
+
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Options
+                        </strong>
+
+                        <span>
+                            {{ option_count }} choices
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- =================================================
+                     STEP 03
+                ================================================== -->
+
+                <article
+                    class="workflow-step
+                    {% if criteria_complete %}
+                        completed
+                    {% elif current_step == 'criteria' %}
+                        current
+                    {% else %}
+                        locked
+                    {% endif %}"
+                >
+
+                    <div class="workflow-node">
+
+                        {% if criteria_complete %}
+                            ✓
+                        {% else %}
+                            03
+                        {% endif %}
+
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Criteria
+                        </strong>
+
+                        <span>
+                            {{ "%.0f"|format(total_weight) }}% weighted
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- =================================================
+                     STEP 04
+                ================================================== -->
+
+                <article
+                    class="workflow-step
+                    {% if scoring_complete %}
+                        completed
+                    {% elif current_step == 'scoring' %}
+                        current
+                    {% else %}
+                        locked
+                    {% endif %}"
+                >
+
+                    <div class="workflow-node">
+
+                        {% if scoring_complete %}
+                            ✓
+                        {% else %}
+                            04
+                        {% endif %}
+
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Scoring
+                        </strong>
+
+                        <span>
+                            {{ score_count }}/{{ expected_scores }}
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- =================================================
+                     STEP 05
+                ================================================== -->
+
+                <article
+                    class="workflow-step
+                    {% if risk_complete %}
+                        completed
+                    {% elif current_step == 'risk' %}
+                        current
+                    {% else %}
+                        locked
+                    {% endif %}"
+                >
+
+                    <div class="workflow-node">
+
+                        {% if risk_complete %}
+                            ✓
+                        {% else %}
+                            05
+                        {% endif %}
+
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Risk
+                        </strong>
+
+                        <span>
+                            {{ risk_count }}/{{ option_count }}
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- =================================================
+                        STEP 06
+                    ================================================== -->
+
+                    <article
+                        class="workflow-step
+                        {% if decision.status == 'completed' %}
+                            completed
+                        {% elif risk_adjusted_available %}
+                            available
+                        {% else %}
+                            locked
+                        {% endif %}"
+                    >
+
+                        <div class="workflow-node">
+
+                            {% if decision.status == 'completed' %}
+                                ✓
+                            {% else %}
+                                06
+                            {% endif %}
+
+                        </div>
+
+                        <div class="workflow-content">
+
+                            <strong>
+                                Risk-Adjusted
+                            </strong>
+
+                            <span>
+                                Analysis
+                            </span>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- =================================================
+                        STEP 07
+                    ================================================== -->
+
+                    <article
+                        class="workflow-step
+                        {% if decision.status == 'completed' %}
+                            completed
+                        {% elif what_if_available %}
+                            available
+                        {% else %}
+                            locked
+                        {% endif %}"
+                    >
+
+                        <div class="workflow-node">
+
+                            {% if decision.status == 'completed' %}
+                                ✓
+                            {% else %}
+                                07
+                            {% endif %}
+
+                        </div>
+
+                        <div class="workflow-content">
+
+                            <strong>
+                                What-If
+                            </strong>
+
+                            <span>
+                                Simulation
+                            </span>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- =================================================
+                        STEP 08
+                    ================================================== -->
+
+                    <article
+                        class="workflow-step
+                        {% if decision.status == 'completed' %}
+                            completed
+                        {% elif summary_available %}
+                            available
+                        {% else %}
+                            locked
+                        {% endif %}"
+                    >
+
+                        <div class="workflow-node">
+
+                            {% if decision.status == 'completed' %}
+                                ✓
+                            {% else %}
+                                08
+                            {% endif %}
+
+                        </div>
+
+                        <div class="workflow-content">
+
+                            <strong>
+                                Summary
+                            </strong>
+
+                            <span>
+                                Recommendation
+                            </span>
+
+                        </div>
+
+                    </article>
+
+
+                <!-- =================================================
+                     STEP 09
+                ================================================== -->
+
+                <article
+                    class="workflow-step
+                    {% if decision.status == 'completed' %}
+                        completed
+                    {% elif stability_available %}
+                        available
+                    {% else %}
+                        locked
+                    {% endif %}"
+                >
+
+                    <div class="workflow-node">
+                        {% if decision.status == 'completed' %}
+                            ✓
+                        {% else %}
+                            09
+                        {% endif %}
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <strong>
+                            Stability
+                        </strong>
+
+                        <span>
+                            Sensitivity
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 WORKFLOW ACTIONS
+            ================================================== -->
+
+            <div class="workflow-actions">
+
+
+                {% if not options_complete %}
+
+                    <div class="workflow-action current-action">
+
+                        <div class="action-icon">
+                            01
+                        </div>
+
+                        <div class="action-content">
+
+                            <span>
+                                NEXT STEP
+                            </span>
+
+                            <h3>
+                                Add your options
+                            </h3>
+
+                            <p>
+                                Add at least two alternatives
+                                for LifeOS to compare.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for(
+                                'decisions.add_options',
+                                decision_id=decision.id
+                            ) }}"
+                            class="workflow-button"
+                        >
+                            Add Options
+                            <span>→</span>
+                        </a>
+
+                    </div>
+
+
+                {% elif not criteria_complete %}
+
+                    <div class="workflow-action current-action">
+
+                        <div class="action-icon">
+                            02
+                        </div>
+
+                        <div class="action-content">
+
+                            <span>
+                                NEXT STEP
+                            </span>
+
+                            <h3>
+                                Define your criteria
+                            </h3>
+
+                            <p>
+                                Choose what matters and make
+                                the total importance equal 100%.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for(
+                                'criteria.manage_criteria',
+                                decision_id=decision.id
+                            ) }}"
+                            class="workflow-button"
+                        >
+                            Add Criteria
+                            <span>→</span>
+                        </a>
+
+                    </div>
+
+
+                {% elif not scoring_complete %}
+
+                    <div class="workflow-action current-action">
+
+                        <div class="action-icon">
+                            03
+                        </div>
+
+                        <div class="action-content">
+
+                            <span>
+                                NEXT STEP
+                            </span>
+
+                            <h3>
+                                Score your options
+                            </h3>
+
+                            <p>
+                                Rate every option against
+                                every selected criterion.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for(
+                                'scoring.manage_scoring',
+                                decision_id=decision.id
+                            ) }}"
+                            class="workflow-button"
+                        >
+                            Start Scoring
+                            <span>→</span>
+                        </a>
+
+                    </div>
+
+
+                {% elif not risk_complete %}
+
+                    <div class="workflow-action current-action">
+
+                        <div class="action-icon">
+                            04
+                        </div>
+
+                        <div class="action-content">
+
+                            <span>
+                                NEXT STEP
+                            </span>
+
+                            <h3>
+                                Analyze decision risk
+                            </h3>
+
+                            <p>
+                                Evaluate probability and impact
+                                for each option.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for(
+                                'risk_analysis.manage_risk_analysis',
+                                decision_id=decision.id
+                            ) }}"
+                            class="workflow-button"
+                        >
+                            Analyze Risks
+                            <span>→</span>
+                        </a>
+
+                    </div>
+
+
+                {% else %}
+
+                    <div class="workflow-action advanced-action">
+
+                        <div class="action-icon">
+                            ✦
+                        </div>
+
+                        <div class="action-content">
+
+                            <span>
+                                ADVANCED DECISION INTELLIGENCE
+                            </span>
+
+                            <h3>
+                                Your core analysis is ready
+                            </h3>
+
+                            <p>
+                                Explore risk-adjusted results,
+                                simulate alternative scenarios,
+                                generate the final recommendation,
+                                and test decision stability.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- =================================================
+                 ADVANCED ACTION GRID
+            ================================================== -->
+
+            {% if risk_complete %}
+
+                <div class="advanced-grid">
+
+
+                    <!-- RISK-ADJUSTED -->
+
+                    <article class="advanced-card">
+
+                        <div class="advanced-number">
+                            06
+                        </div>
+
+                        <span class="advanced-label">
+                            RISK-AWARE
+                        </span>
+
+                        <h3>
+                            Risk-Adjusted Analysis
+                        </h3>
+
+                        <p>
+                            Compare weighted scores after
+                            accounting for risk exposure.
+                        </p>
+
+                        <a
+                            href="{{ url_for(
+                                'risk_adjusted.manage_risk_adjusted',
+                                decision_id=decision.id
+                            ) }}"
+                            class="advanced-button"
+                        >
+                            Open Analysis
+                            <span>→</span>
+                        </a>
+
+                    </article>
+
+
+                    <!-- WHAT-IF -->
+
+                    <article class="advanced-card">
+
+                        <div class="advanced-number">
+                            07
+                        </div>
+
+                        <span class="advanced-label">
+                            SCENARIO
+                        </span>
+
+                        <h3>
+                            What-If Simulator
+                        </h3>
+
+                        <p>
+                            Change assumptions and explore
+                            alternative decision outcomes.
+                        </p>
+
+                        <a
+                            href="{{ url_for(
+                                'what_if.what_if_analysis',
+                                decision_id=decision.id
+                            ) }}"
+                            class="advanced-button"
+                        >
+                            Run Simulation
+                            <span>→</span>
+                        </a>
+
+                    </article>
+
+
+                    <!-- FINAL SUMMARY -->
+
+                    <article class="advanced-card">
+
+                        <div class="advanced-number">
+                            08
+                        </div>
+
+                        <span class="advanced-label">
+                            RECOMMENDATION
+                        </span>
+
+                        <h3>
+                            Final Decision Summary
+                        </h3>
+
+                        <p>
+                            Generate the explainable
+                            risk-adjusted recommendation.
+                        </p>
+
+                        <a
+                            href="{{ url_for(
+                                'decisions.decision_summary',
+                                decision_id=decision.id
+                            ) }}"
+                            class="advanced-button"
+                        >
+                            View Summary
+                            <span>→</span>
+                        </a>
+
+                    </article>
+
+
+                    <!-- STABILITY -->
+
+                    <article class="advanced-card stability-card">
+
+                        <div class="advanced-number">
+                            09
+                        </div>
+
+                        <span class="advanced-label">
+                            DECISION STABILITY
+                        </span>
+
+                        <h3>
+                            Sensitivity Analysis
+                        </h3>
+
+                        <p>
+                            Test whether the recommendation
+                            remains stable when assumptions change.
+                        </p>
+
+                        <a
+                            href="{{ url_for(
+                                'sensitivity.decision_sensitivity',
+                                decision_id=decision.id
+                            ) }}"
+                            class="advanced-button"
+                        >
+                            Check Stability
+                            <span>→</span>
+                        </a>
+
+                    </article>
+
+
+                </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+        <!-- =================================================
+             QUICK STATUS
+        ================================================== -->
+
+        <section class="quick-status">
+
+
+            <div class="quick-status-header">
+
+                <div>
+
+                    <span class="workflow-label">
+                        DECISION STATUS
+                    </span>
+
+                    <h2>
+                        Analysis Snapshot
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="quick-status-grid">
+
+
+                <div class="quick-status-item">
+
+                    <span>
+                        OPTIONS
+                    </span>
+
+                    <strong>
+                        {{ option_count }}
+                    </strong>
+
+                </div>
+
+
+                <div class="quick-status-item">
+
+                    <span>
+                        CRITERIA
+                    </span>
+
+                    <strong>
+                        {{ criteria_count }}
+                    </strong>
+
+                </div>
+
+
+                <div class="quick-status-item">
+
+                    <span>
+                        WEIGHT
+                    </span>
+
+                    <strong>
+                        {{ "%.0f"|format(total_weight) }}%
+                    </strong>
+
+                </div>
+
+
+                <div class="quick-status-item">
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <strong class="status-value">
+                        {{ decision.status }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

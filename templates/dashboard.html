@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>LifeOS | Dashboard</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <h2>LifeOS</h2>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item active"
+            >
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('decisions.create_decision') }}"
+                class="nav-item"
+            >
+                <span>＋</span>
+                New Decision
+            </a>
+
+            <a
+                href="{{ url_for('analytics.dashboard') }}"
+                class="nav-item"
+            >
+                <span>▥</span>
+                Analytics
+            </a>
+
+            <a
+                href="{{ url_for('history.decision_history') }}"
+                class="nav-item"
+            >
+
+                <span>◷</span>
+
+                History
+
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="user-mini">
+
+                <div class="avatar">
+
+                    {{ user_name[:1]|upper }}
+
+                </div>
+
+
+                <div class="user-info">
+
+                    <strong>
+                        {{ user_name }}
+                    </strong>
+
+                    <span>
+                        {{ user_email }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-link"
+            >
+
+                <span>
+                    ↪
+                </span>
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+
+        <!-- Top Header -->
+
+        <header class="top-header">
+
+            <div class="header-content">
+
+                <p class="eyebrow">
+                    PERSONAL DECISION CENTER
+                </p>
+
+                <h1>
+                    Welcome back,
+                    {{ user_name.split(' ')[0] }}
+                    <span class="wave">👋</span>
+                </h1>
+
+                <p class="subtitle">
+                    Turn complex choices into structured decisions.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('decisions.create_decision') }}"
+                class="new-decision-btn"
+            >
+
+                <span class="btn-icon">
+                    ＋
+                </span>
+
+                Create Decision
+
+            </a>
+
+        </header>
+
+
+
+        <!-- Statistics -->
+
+        <section class="stats-grid">
+
+
+            <!-- Total -->
+
+            <article class="stat-card">
+
+                <div class="stat-icon">
+                    ◈
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Total Decisions
+                    </span>
+
+                    <strong
+                        class="counter"
+                        data-value="{{ stats.total }}"
+                    >
+                        {{ stats.total }}
+                    </strong>
+
+                    <small>
+                        All decisions created
+                    </small>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- Completed -->
+
+            <article class="stat-card">
+
+                <div class="stat-icon success">
+                    ✓
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Completed
+                    </span>
+
+                    <strong
+                        class="counter"
+                        data-value="{{ stats.completed }}"
+                    >
+                        {{ stats.completed }}
+                    </strong>
+
+                    <small>
+                        Decisions analyzed
+                    </small>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- In Progress -->
+
+            <article class="stat-card">
+
+                <div class="stat-icon warning">
+                    ◷
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        In Progress
+                    </span>
+
+                    <strong
+                        class="counter"
+                        data-value="{{ stats.in_progress }}"
+                    >
+                        {{ stats.in_progress }}
+                    </strong>
+
+                    <small>
+                        Need your attention
+                    </small>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- Confidence -->
+
+            <article class="stat-card">
+
+                <div class="stat-icon confidence">
+                    ◎
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Avg. Confidence
+                    </span>
+
+                    <strong>
+                        {{ stats.average_confidence }}%
+                    </strong>
+
+                    <small>
+                        Decision confidence
+                    </small>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- Decision Intelligence Overview -->
+
+        <section class="overview-section">
+
+            <div class="overview-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        DECISION INTELLIGENCE
+                    </p>
+
+                    <h2>
+                        Your decision health
+                    </h2>
+
+                </div>
+
+                <span class="overview-badge">
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <div class="health-grid">
+
+
+                <!-- Completion -->
+
+                <div class="health-card">
+
+                    <div class="health-card-top">
+
+                        <div>
+
+                            <span class="health-label">
+                                Completion Rate
+                            </span>
+
+                            <strong>
+
+                                {% if stats.total > 0 %}
+
+                                    {{ "%.0f"|format(
+                                        (stats.completed / stats.total) * 100
+                                    ) }}%
+
+                                {% else %}
+
+                                    0%
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="health-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            class="progress-fill completion-progress"
+                            data-progress="{% if stats.total > 0 %}{{ (stats.completed / stats.total) * 100 }}{% else %}0{% endif %}"
+                        ></div>
+
+                    </div>
+
+
+                    <p>
+                        Completed decisions compared with your total decision history.
+                    </p>
+
+                </div>
+
+
+
+                <!-- Confidence -->
+
+                <div class="health-card">
+
+                    <div class="health-card-top">
+
+                        <div>
+
+                            <span class="health-label">
+                                Average Confidence
+                            </span>
+
+                            <strong>
+                                {{ stats.average_confidence }}%
+                            </strong>
+
+                        </div>
+
+                        <div class="health-icon purple">
+                            ◎
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            class="progress-fill confidence-progress"
+                            data-progress="{{ stats.average_confidence }}"
+                        ></div>
+
+                    </div>
+
+
+                    <p>
+                        Indicates how clearly your analyzed decisions separate from alternatives.
+                    </p>
+
+                </div>
+
+
+
+                <!-- Focus -->
+
+                <div class="health-card focus-card">
+
+                    <div class="health-card-top">
+
+                        <div>
+
+                            <span class="health-label">
+                                Current Focus
+                            </span>
+
+                            <strong>
+                                {% if stats.in_progress > 0 %}
+                                    {{ stats.in_progress }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+                        <div class="health-icon orange">
+                            ◷
+                        </div>
+
+                    </div>
+
+
+                    <div class="focus-status">
+
+                        {% if stats.in_progress > 0 %}
+
+                            <span class="focus-dot active"></span>
+
+                            {{ stats.in_progress }}
+                            decision{% if stats.in_progress != 1 %}s{% endif %}
+                            need attention
+
+                        {% else %}
+
+                            <span class="focus-dot"></span>
+
+                            All decisions are up to date
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <p>
+                        Decisions that have not completed the LifeOS analysis pipeline.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Recent Decisions -->
+
+        <section class="decision-section">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="eyebrow">
+                        DECISION HISTORY
+                    </p>
+
+                    <h2>
+                        Recent Decisions
+                    </h2>
+
+                </div>
+
+
+                <div class="decision-actions">
+
+                    <a
+                        href="{{ url_for('history.decision_history') }}"
+                        class="text-action"
+                    >
+                        View All Decisions →
+                    </a>
+
+                    <a
+                        href="{{ url_for('decisions.create_decision') }}"
+                        class="text-action"
+                    >
+                        + New Decision
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            {% if recent_decisions %}
+
+            <div class="decision-list">
+
+
+                {% for decision in recent_decisions %}
+
+                <article class="decision-card">
+
+
+                    <div class="decision-main">
+
+                        <div class="decision-title-row">
+
+                            <h3>
+                                {{ decision.title }}
+                            </h3>
+
+
+                            {% if decision.status == "completed" %}
+
+                            <span class="status completed">
+                                Completed
+                            </span>
+
+                            {% else %}
+
+                            <span class="status progress">
+                                In Progress
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="decision-meta">
+
+                            <span>
+                                {{ decision.category or "General" }}
+                            </span>
+
+                            <span>
+                                •
+                            </span>
+
+                            <span>
+
+                                {{ decision.created_at.strftime('%d %b %Y') }}
+
+                            </span>
+
+                        </div>
+
+
+                        {% if decision.description %}
+
+                        <p class="decision-description">
+
+                            {{ decision.description[:140] }}
+
+                            {% if decision.description|length > 140 %}
+                                ...
+                            {% endif %}
+
+                        </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- Score -->
+
+                    <div class="decision-score">
+
+                        {% if decision.final_score is not none %}
+
+                        <div class="score-value">
+
+                            {{ "%.2f"|format(decision.final_score) }}
+
+                        </div>
+
+                        <span>
+                            Final Score
+                        </span>
+
+                        {% else %}
+
+                        <div class="score-pending">
+                            —
+                        </div>
+
+                        <span>
+                            Not analyzed
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- Confidence -->
+
+                    <div class="decision-confidence">
+
+                        {% if decision.confidence_score is not none %}
+
+                        <div class="confidence-circle">
+
+                            <strong>
+                                {{ "%.0f"|format(decision.confidence_score) }}%
+                            </strong>
+
+                        </div>
+
+                        <span>
+                            Confidence
+                        </span>
+
+                        {% else %}
+
+                        <div class="confidence-circle muted">
+
+                            <strong>
+                                —
+                            </strong>
+
+                        </div>
+
+                        <span>
+                            Confidence
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- Action -->
+
+                    <div class="decision-action">
+
+                        <a
+                            href="{{ url_for(
+                                'decisions.decision_detail',
+                                decision_id=decision.id
+                            ) }}"
+                            class="view-btn"
+                        >
+
+                            View
+
+                            <span>
+                                →
+                            </span>
+
+                        </a>
+
+                    </div>
+
+
+                </article>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <!-- Empty State -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ◇
+                </div>
+
+                <h3>
+                    No decisions yet
+                </h3>
+
+                <p>
+                    Start your first decision and let LifeOS
+                    help you evaluate the options.
+                </p>
+
+                <a
+                    href="{{ url_for('decisions.create_decision') }}"
+                    class="new-decision-btn"
+                >
+
+                    <span>
+                        ＋
+                    </span>
+
+                    Create Your First Decision
+
+                </a>
+
+            </div>
+
+
+            {% endif %}
+
+        </section>
+
+
+
+        <!-- Intelligence Banner -->
+
+        <section class="intelligence-card">
+
+            <div class="intelligence-icon">
+                ✦
+            </div>
+
+
+            <div>
+
+                <p class="eyebrow">
+                    LIFEOS INTELLIGENCE
+                </p>
+
+                <h3>
+                    Decisions become clearer when uncertainty is structured.
+                </h3>
+
+                <p>
+                    Compare options, assign weighted criteria,
+                    evaluate risk and test different scenarios
+                    before making important choices.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <script
+        src="{{ url_for('static', filename='js/dashboard.js') }}"
+    ></script>
+
+</body>
+
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Explore alternative decision scenarios with LifeOS"
+    >
+
+    <title>What-If Analysis | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/what_if.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', filename='js/what_if.js') }}"
+        defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for(
+                'risk_analysis.manage_risk_analysis',
+                decision_id=decision.id
+            ) }}"
+            class="back-link"
+        >
+            ← Risk Analysis
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="what-if-page">
+
+
+        <!-- ================= HERO ================= -->
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 06 · WHAT-IF ANALYSIS
+            </span>
+
+            <h1>
+                What if things change?
+            </h1>
+
+            <p>
+                Explore how changing scores or risk assumptions
+                could affect your decision.
+            </p>
+
+        </section>
+
+
+
+        <!-- ================= DECISION CONTEXT ================= -->
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div>
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= INFO ================= -->
+
+        <section class="info-card">
+
+            <div class="info-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    DECISION INTELLIGENCE
+                </span>
+
+                <h2>
+                    Explore alternative scenarios
+                </h2>
+
+                <p>
+                    What-If Analysis lets you test hypothetical
+                    changes without modifying your saved decision.
+                    This helps you understand how sensitive your
+                    result is to different assumptions.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= CURRENT BASELINE ================= -->
+
+        <section class="options-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="section-label">
+                        CURRENT BASELINE
+                    </span>
+
+                    <h2>
+                        Your current options
+                    </h2>
+
+                    <p>
+                        These are the values currently used by LifeOS.
+                    </p>
+
+                </div>
+
+                <div class="baseline-badge">
+                    BASELINE
+                </div>
+
+            </div>
+
+
+            <div class="options-list">
+
+                {% for option in options %}
+
+                <article class="option-card">
+
+                    <div class="option-number">
+                        {{ "%02d"|format(loop.index) }}
+                    </div>
+
+
+                    <div class="option-main">
+
+                        <div class="option-title-row">
+
+                            <h3>
+                                {{ option.option_name }}
+                            </h3>
+
+                            <span class="score-badge">
+                                {{ "%.2f"|format(option.weighted_score) }}/10
+                            </span>
+
+                        </div>
+
+
+                        {% if option.description %}
+
+                        <p class="option-description">
+                            {{ option.description }}
+                        </p>
+
+                        {% endif %}
+
+
+                        <div class="option-metrics">
+
+                            <div class="metric">
+
+                                <span>
+                                    Weighted Score
+                                </span>
+
+                                <strong>
+                                    {{ "%.2f"|format(option.weighted_score) }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <span>
+                                    Risk Probability
+                                </span>
+
+                                <strong>
+                                    {{ "%.1f"|format(option.probability) }}%
+                                </strong>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <span>
+                                    Risk Impact
+                                </span>
+
+                                <strong>
+                                    {{ "%.1f"|format(option.impact) }}/10
+                                </strong>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <span>
+                                    Risk Score
+                                </span>
+
+                                <strong class="risk-value">
+                                    {{ "%.2f"|format(option.risk_score) }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="score-bar">
+
+                            <div
+                                class="score-fill"
+                                style="width: {{ (option.weighted_score * 10)|round(2) }}%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= SCENARIO BUILDER ================= -->
+
+        <section class="scenario-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SCENARIO BUILDER
+                    </span>
+
+                    <h2>
+                        Create a What-If scenario
+                    </h2>
+
+                    <p>
+                        Adjust assumptions below to see how a different
+                        situation could influence your decision.
+                    </p>
+
+                </div>
+
+                <div class="scenario-badge">
+                    SIMULATION
+                </div>
+
+            </div>
+
+
+            <div class="scenario-grid">
+
+                {% for option in options %}
+
+                <div
+                    class="scenario-option"
+                    data-option-id="{{ option.id }}"
+                    data-option-name="{{ option.option_name }}"
+                    data-baseline-score="{{ option.weighted_score }}"
+                    data-baseline-probability="{{ option.probability }}"
+                    data-baseline-impact="{{ option.impact }}"
+                    data-baseline-risk="{{ option.risk_score }}"
+                >
+
+                    <div class="scenario-option-header">
+
+                        <div class="scenario-number">
+                            {{ "%02d"|format(loop.index) }}
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                {{ option.option_name }}
+                            </h3>
+
+                            <span>
+                                Adjust scenario values
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="scenario-fields">
+
+
+                        <div class="scenario-field">
+
+                            <label>
+                                Score
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="number"
+                                    class="scenario-score"
+                                    min="0"
+                                    max="10"
+                                    step="0.1"
+                                    value="{{ option.weighted_score }}"
+                                >
+
+                                <span>
+                                    /10
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="scenario-field">
+
+                            <label>
+                                Risk Probability
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="number"
+                                    class="scenario-probability"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    value="{{ option.probability }}"
+                                >
+
+                                <span>
+                                    %
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="scenario-field">
+
+                            <label>
+                                Risk Impact
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="number"
+                                    class="scenario-impact"
+                                    min="0"
+                                    max="10"
+                                    step="0.1"
+                                    value="{{ option.impact }}"
+                                >
+
+                                <span>
+                                    /10
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="scenario-result">
+
+                        <span>
+                            Simulated Risk Score
+                        </span>
+
+                        <strong class="risk-result">
+                            {{ "%.2f"|format(option.risk_score) }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- ================= ACTION BUTTONS ================= -->
+
+            <div class="scenario-actions">
+
+                <button
+                    type="button"
+                    class="reset-btn"
+                    id="resetScenarioBtn"
+                >
+                    Reset Scenario
+                </button>
+
+
+                <button
+                    type="button"
+                    class="simulate-btn"
+                    id="runSimulationBtn"
+                >
+
+                    Run What-If Simulation
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= RESULT ================= -->
+
+        <section
+            class="simulation-result"
+            id="simulationResult"
+        >
+
+            <div class="result-icon">
+                ✦
+            </div>
+
+            <div class="result-content">
+
+                <span class="section-label">
+                    SIMULATION RESULT
+                </span>
+
+                <h2 id="resultTitle">
+                    Change the assumptions to explore a scenario
+                </h2>
+
+                <p id="resultMessage">
+                    LifeOS will compare the simulated values
+                    against your current baseline.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <section class="page-actions">
+
+            <a
+                href="{{ url_for(
+                    'risk_analysis.manage_risk_analysis',
+                    decision_id=decision.id
+                ) }}"
+                class="back-btn"
+            >
+                ← Back to Risk Analysis
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'decisions.decision_summary',
+                    decision_id=decision.id
+                ) }}"
+                class="dashboard-btn"
+            >
+
+                Finish Analysis
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+        </section>
+
+    </main>
+
+
+</body>
+
+</html>

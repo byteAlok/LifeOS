@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Define decision criteria for LifeOS"
+    >
+
+    <title>Criteria | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/criteria.css') }}"
+    >
+
+    <script
+    src="{{ url_for('static', filename='js/criteria.js') }}"
+    defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('decisions.decision_detail', decision_id=decision.id) }}"
+            class="back-link"
+        >
+            ← Decision
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="criteria-page">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 02 · CRITERIA
+            </span>
+
+            <h1>
+                What matters most to you?
+            </h1>
+
+            <p>
+                Define the factors you want LifeOS to use
+                when comparing your options.
+            </p>
+
+        </section>
+
+
+
+        <!-- ================= DECISION CONTEXT ================= -->
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div class="context-content">
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FLASH MESSAGES ================= -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="alert {{ category }}">
+
+                            <span class="alert-icon">
+
+                                {% if category == "success" %}
+                                    ✓
+                                {% else %}
+                                    !
+                                {% endif %}
+
+                            </span>
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ================= CONTENT GRID ================= -->
+
+        <section class="criteria-layout">
+
+
+            <!-- ================= ADD CRITERION ================= -->
+
+            <div class="add-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            ADD CRITERION
+                        </span>
+
+                        <h2>
+                            Define what matters
+                        </h2>
+
+                        <p>
+                            Add a factor and assign how important
+                            it is to your decision.
+                        </p>
+
+                    </div>
+
+                    <div class="step-badge">
+                        02
+                    </div>
+
+                </div>
+
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for('criteria.manage_criteria', decision_id=decision.id) }}"
+                    class="criteria-form"
+                >
+
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Criterion Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            maxlength="150"
+                            placeholder="Example: Salary Potential"
+                            required
+                        >
+
+                        <span class="field-hint">
+                            Choose a clear factor you can compare across options.
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="description">
+                            Description
+                            <span class="optional">
+                                Optional
+                            </span>
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            maxlength="500"
+                            rows="4"
+                            placeholder="What does this criterion mean to you?"
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <div class="weight-label-row">
+
+                            <label for="weight">
+                                Importance Weight
+                            </label>
+
+                            <strong>
+                                %
+                            </strong>
+
+                        </div>
+
+                        <div class="weight-input">
+
+                            <input
+                                type="number"
+                                id="weight"
+                                name="weight"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                placeholder="20"
+                                required
+                            >
+
+                            <span>
+                                %
+                            </span>
+
+                        </div>
+
+                        <span class="field-hint">
+                            The total importance of all criteria must equal 100%.
+                        </span>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="add-btn"
+                    >
+
+                        <span>
+                            +
+                        </span>
+
+                        Add Criterion
+
+                    </button>
+
+
+                </form>
+
+            </div>
+
+
+
+            <!-- ================= CURRENT CRITERIA ================= -->
+
+            <div class="criteria-card">
+
+
+                <div class="card-heading criteria-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            YOUR CRITERIA
+                        </span>
+
+                        <h2>
+                            Decision factors
+                        </h2>
+
+                    </div>
+
+                    <div class="criteria-count">
+                        {{ criteria_list|length }}
+                    </div>
+
+                </div>
+
+
+
+                {% if criteria_list %}
+
+
+                    <div class="criteria-list">
+
+
+                        {% for item in criteria_list %}
+
+                            <article class="criterion-item">
+
+                                <div class="criterion-number">
+                                    {{ "%02d"|format(loop.index) }}
+                                </div>
+
+
+                                <div class="criterion-content">
+
+                                    <h3>
+                                        {{ item.name }}
+                                    </h3>
+
+                                    {% if item.description %}
+
+                                        <p>
+                                            {{ item.description }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="criterion-weight">
+
+                                    <strong>
+                                        {{ "%.2f"|format(item.weight|float) }}%
+                                    </strong>
+
+                                    <span>
+                                        importance
+                                    </span>
+
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ◇
+                        </div>
+
+                        <h3>
+                            No criteria added yet
+                        </h3>
+
+                        <p>
+                            Start by adding the factors that
+                            matter most for this decision.
+                        </p>
+
+                    </div>
+
+
+                {% endif %}
+
+
+
+                <!-- ================= TOTAL WEIGHT ================= -->
+
+                <div class="weight-summary">
+
+                    <div class="summary-info">
+
+                        <span>
+                            TOTAL IMPORTANCE
+                        </span>
+
+                        <strong>
+                            {{ "%.2f"|format(total_weight) }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            class="progress-fill {% if total_weight == 100 %}complete{% endif %}"
+                            data-weight="{{ total_weight }}"
+                        ></div>
+
+                    </div>
+
+
+                    {% if total_weight < 100 %}
+
+                        <p class="summary-message">
+                            Add
+                            <strong>
+                                {{ "%.2f"|format(100 - total_weight) }}%
+                            </strong>
+                            more importance to reach 100%.
+                        </p>
+
+                    {% elif total_weight == 100 %}
+
+                        <p class="summary-message complete-message">
+                            ✓ Your criteria are ready for scoring.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================= FOOTER ACTIONS ================= -->
+
+        <section class="page-actions">
+
+
+            <a
+                href="{{ url_for('decisions.decision_detail', decision_id=decision.id) }}"
+                class="back-btn"
+            >
+                ← Back
+            </a>
+
+
+            {% if total_weight == 100 %}
+
+                <a
+                href="{{ url_for('scoring.manage_scoring', decision_id=decision.id) }}"
+                class="continue-btn"
+            >
+                Continue to Scoring
+                <span>→</span>
+            </a>
+
+            {% else %}
+
+                <button
+                    type="button"
+                    class="continue-btn disabled"
+                    disabled
+                >
+
+                    Continue to Scoring
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

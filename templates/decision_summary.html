@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Decision Summary | LifeOS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/decision_summary.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- =====================================================
+             TOP NAVIGATION
+        ====================================================== -->
+
+        <header class="topbar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    L
+                </div>
+
+                <div>
+
+                    <h2>
+                        LifeOS
+                    </h2>
+
+                    <span>
+                        Decision Intelligence
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="top-actions">
+
+                <a
+                    href="{{ url_for(
+                        'decisions.decision_detail',
+                        decision_id=decision.id
+                    ) }}"
+                    class="back-button"
+                >
+                    ← Back to Decision
+                </a>
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="logout-button"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="main-container">
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <section class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        FINAL ANALYSIS
+                    </span>
+
+                    <h1>
+                        {{ decision.title }}
+                    </h1>
+
+                    {% if decision.description %}
+
+                    <p>
+                        {{ decision.description }}
+                    </p>
+
+                    {% endif %}
+
+                    {% if decision.category %}
+
+                    <div class="category-badge">
+                        {{ decision.category }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="completed-badge">
+
+                    <span class="status-dot"></span>
+
+                    Analysis Complete
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 RECOMMENDATION CARD
+            ================================================== -->
+
+            <section class="recommendation-card">
+
+                <div class="recommendation-left">
+
+                    <div class="trophy">
+
+                        🏆
+
+                    </div>
+
+                    <div>
+
+                        <span class="small-label">
+                            LIFEOS RECOMMENDATION
+                        </span>
+
+                        <h2>
+                            {{ recommended_option.option_name }}
+                        </h2>
+
+                        <p>
+                            This option currently provides
+                            the strongest overall balance of
+                            criteria performance and risk.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="recommendation-score">
+
+                    <span>
+                        Final Score
+                    </span>
+
+                    <strong>
+                        {{ recommended_option.risk_adjusted_score }}
+                    </strong>
+
+                    <small>
+                        / 10
+                    </small>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 KEY METRICS
+            ================================================== -->
+
+            <section class="metrics-grid">
+
+
+                <!-- Confidence -->
+
+                <div class="metric-card">
+
+                    <div class="metric-icon">
+                        🎯
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Confidence
+                        </span>
+
+                        <strong>
+                            {{ confidence }}%
+                        </strong>
+
+                        <small>
+                            Based on score separation
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Decision Strength -->
+
+                <div class="metric-card">
+
+                    <div class="metric-icon">
+                        ⚡
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Decision Strength
+                        </span>
+
+                        <strong>
+                            {{ decision_strength }}
+                        </strong>
+
+                        <small>
+                            Recommendation strength
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Options -->
+
+                <div class="metric-card">
+
+                    <div class="metric-icon">
+                        🔀
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Options Compared
+                        </span>
+
+                        <strong>
+                            {{ option_count }}
+                        </strong>
+
+                        <small>
+                            Alternatives evaluated
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Criteria -->
+
+                <div class="metric-card">
+
+                    <div class="metric-icon">
+                        📊
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Criteria
+                        </span>
+
+                        <strong>
+                            {{ criteria_count }}
+                        </strong>
+
+                        <small>
+                            Decision factors
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CONFIDENCE BAR
+            ================================================== -->
+
+            <section class="analysis-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            CONFIDENCE ANALYSIS
+                        </span>
+
+                        <h2>
+                            How decisive is this recommendation?
+                        </h2>
+
+                    </div>
+
+                    <span class="confidence-value">
+                        {{ confidence }}%
+                    </span>
+
+                </div>
+
+                <div class="progress-track">
+
+                    <div
+                        class="progress-fill"
+                        style="width: {{ confidence }}%;"
+                    ></div>
+
+                </div>
+
+                <div class="confidence-scale">
+
+                    <span>
+                        Low
+                    </span>
+
+                    <span>
+                        Moderate
+                    </span>
+
+                    <span>
+                        High
+                    </span>
+
+                </div>
+
+                <p class="analysis-note">
+
+                    Confidence represents how clearly the
+                    highest-ranked option separates from the
+                    next-best option. It is not a prediction
+                    of future outcomes.
+
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 RECOMMENDATION EXPLANATION
+            ================================================== -->
+
+            <section class="two-column">
+
+
+                <!-- Why this option -->
+
+                <div class="analysis-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                RECOMMENDATION
+                            </span>
+
+                            <h2>
+                                Why this option?
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    <div class="explanation">
+
+                        <div class="explanation-row">
+
+                            <span class="explanation-icon">
+                                ✓
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Highest risk-adjusted score
+                                </strong>
+
+                                <p>
+                                    {{ recommended_option.option_name }}
+                                    achieved the highest
+                                    risk-adjusted score among
+                                    the evaluated alternatives.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="explanation-row">
+
+                            <span class="explanation-icon">
+                                ⚖
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Risk was considered
+                                </strong>
+
+                                <p>
+                                    The final score accounts for
+                                    the risk assessment rather than
+                                    considering raw criteria scores
+                                    alone.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if runner_up %}
+
+                        <div class="explanation-row">
+
+                            <span class="explanation-icon">
+                                ↗
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    {{ score_difference }}
+                                    point lead
+                                </strong>
+
+                                <p>
+                                    The recommended option leads
+                                    the second-ranked option by
+                                    {{ score_difference }} points.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Runner Up -->
+
+                <div class="analysis-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                ALTERNATIVE
+                            </span>
+
+                            <h2>
+                                Runner-up
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    {% if runner_up %}
+
+                    <div class="runner-up">
+
+                        <div class="runner-icon">
+                            #2
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                {{ runner_up.option_name }}
+                            </h3>
+
+                            <span>
+                                Final Score
+                            </span>
+
+                            <strong>
+                                {{ runner_up.risk_adjusted_score }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="comparison-line">
+
+                        <span>
+                            Difference
+                        </span>
+
+                        <strong>
+                            {{ score_difference }} points
+                        </strong>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state">
+
+                        <span>
+                            No runner-up available.
+                        </span>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 OPTION RANKING
+            ================================================== -->
+
+            <section class="analysis-card ranking-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            OPTION RANKING
+                        </span>
+
+                        <h2>
+                            All alternatives
+                        </h2>
+
+                    </div>
+
+                    <span class="result-count">
+                        {{ option_count }} options
+                    </span>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Rank
+                                </th>
+
+                                <th>
+                                    Option
+                                </th>
+
+                                <th>
+                                    Weighted Score
+                                </th>
+
+                                <th>
+                                    Risk
+                                </th>
+
+                                <th>
+                                    Risk-adjusted Score
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for result in results %}
+
+                            <tr
+                                class="{% if result.id == recommended_option.id %}recommended-row{% endif %}"
+                            >
+
+                                <td>
+
+                                    {% if result.rank == 1 %}
+
+                                    <span class="rank rank-first">
+                                        🏆 1
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="rank">
+                                        #{{ result.rank }}
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="option-cell">
+
+                                        <strong>
+                                            {{ result.option_name }}
+                                        </strong>
+
+                                        {% if result.id == recommended_option.id %}
+
+                                        <span class="recommended-tag">
+                                            Recommended
+                                        </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="score-pill">
+                                        {{ result.weighted_score }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="risk-cell">
+
+                                        <span>
+                                            {{ result.risk_score }}
+                                        </span>
+
+                                        <div class="mini-bar">
+
+                                            <div
+                                                style="width: {{ result.risk_score }}%;"
+                                            ></div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <strong class="final-score">
+
+                                        {{ result.risk_adjusted_score }}
+
+                                    </strong>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DECISION DATA
+            ================================================== -->
+
+            <section class="analysis-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            ANALYSIS DATA
+                        </span>
+
+                        <h2>
+                            Decision completeness
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="data-grid">
+
+                    <div class="data-item">
+
+                        <span>
+                            Criteria Weight
+                        </span>
+
+                        <strong>
+                            {{ total_weight }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="data-item">
+
+                        <span>
+                            Scores Recorded
+                        </span>
+
+                        <strong>
+                            {{ score_count }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="data-item">
+
+                        <span>
+                            Risk Assessments
+                        </span>
+
+                        <strong>
+                            {{ risk_count }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="data-item">
+
+                        <span>
+                            Analysis Status
+                        </span>
+
+                        <strong class="complete-text">
+                            Complete
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DISCLAIMER
+            ================================================== -->
+
+            <section class="disclaimer">
+
+                <span class="disclaimer-icon">
+                    ℹ
+                </span>
+
+                <div>
+
+                    <strong>
+                        Decision-support notice
+                    </strong>
+
+                    <p>
+
+                        LifeOS provides a structured decision
+                        analysis based on the information and
+                        scores you provide. The recommendation
+                        is not a guarantee of future results and
+                        should be considered alongside your own
+                        judgment.
+
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER ACTIONS
+            ================================================== -->
+
+            <div class="bottom-actions">
+
+                <a
+                    href="{{ url_for(
+                        'decisions.decision_detail',
+                        decision_id=decision.id
+                    ) }}"
+                    class="secondary-button"
+                >
+                    ← Review Decision
+                </a>
+
+                <a
+                    href="{{ url_for(
+                        'sensitivity.decision_sensitivity',
+                        decision_id=decision.id
+                    ) }}"
+                    class="stability-button"
+                >
+                    Check Decision Stability
+                    <span>→</span>
+                </a>
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="primary-button"
+                >
+                    Go to Dashboard →
+                </a>
+
+            </div>
+
+        </main>
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="footer">
+
+            <span>
+                LifeOS
+            </span>
+
+            <span>
+                Personal Decision Intelligence System
+            </span>
+
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

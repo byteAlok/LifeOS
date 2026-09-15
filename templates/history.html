@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="LifeOS Decision History"
+    >
+
+    <title>
+        Decision History | LifeOS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/history.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-content">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    ⌂
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('decisions.create_decision') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    ＋
+                </span>
+
+                <span>
+                    New Decision
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('analytics.dashboard') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    ▥
+                </span>
+
+                <span>
+                    Analytics
+                </span>
+            </a>
+
+
+            <a
+                href="{{ url_for('history.decision_history') }}"
+                class="nav-item active"
+            >
+                <span class="nav-icon">
+                    ◷
+                </span>
+
+                <span>
+                    History
+                </span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    {{ session.get("user_name", "U")[0]|upper }}
+                </div>
+
+                <div class="user-info">
+
+                    <strong>
+                        {{ session.get("user_name", "User") }}
+                    </strong>
+
+                    <span>
+                        {{ session.get("user_email", "") }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-link"
+            >
+                ↪ Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+
+        <!-- Header -->
+
+        <header class="page-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    LIFEOS RECORDS
+                </span>
+
+                <h1>
+                    Decision History
+                </h1>
+
+                <p>
+                    Review, search and revisit every decision
+                    you have created.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('decisions.create_decision') }}"
+                class="primary-button"
+            >
+                <span>＋</span>
+                Create Decision
+            </a>
+
+        </header>
+
+
+
+        <!-- Stats -->
+
+        <section class="history-stats">
+
+
+            <article class="history-stat">
+
+                <div class="stat-icon purple">
+                    ◈
+                </div>
+
+                <div>
+
+                    <span>
+                        Total Decisions
+                    </span>
+
+                    <strong>
+                        {{ total }}
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="history-stat">
+
+                <div class="stat-icon green">
+                    ✓
+                </div>
+
+                <div>
+
+                    <span>
+                        Completed
+                    </span>
+
+                    <strong>
+                        {{ completed }}
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="history-stat">
+
+                <div class="stat-icon orange">
+                    ◷
+                </div>
+
+                <div>
+
+                    <span>
+                        In Progress
+                    </span>
+
+                    <strong>
+                        {{ in_progress }}
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+        </section>
+
+
+
+        <!-- Filters -->
+
+        <section class="filter-card">
+
+            <form
+                method="GET"
+                action="{{ url_for('history.decision_history') }}"
+                class="filter-form"
+            >
+
+
+                <div class="search-wrapper">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="Search decisions..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+
+                <select
+                    name="status"
+                    class="filter-select"
+                >
+
+                    <option
+                        value="all"
+                        {% if selected_status == "all" %}
+                            selected
+                        {% endif %}
+                    >
+                        All Status
+                    </option>
+
+                    <option
+                        value="completed"
+                        {% if selected_status == "completed" %}
+                            selected
+                        {% endif %}
+                    >
+                        Completed
+                    </option>
+
+                    <option
+                        value="in_progress"
+                        {% if selected_status == "in_progress" %}
+                            selected
+                        {% endif %}
+                    >
+                        In Progress
+                    </option>
+
+                </select>
+
+
+
+                <select
+                    name="category"
+                    class="filter-select"
+                >
+
+                    <option
+                        value="all"
+                    >
+                        All Categories
+                    </option>
+
+
+                    {% for item in categories %}
+
+                    <option
+                        value="{{ item }}"
+                        {% if selected_category == item %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ item }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+
+                <button
+                    type="submit"
+                    class="filter-button"
+                >
+                    Apply Filters
+                </button>
+
+
+                {% if search or selected_status != "all" or selected_category != "all" %}
+
+                <a
+                    href="{{ url_for('history.decision_history') }}"
+                    class="clear-button"
+                >
+                    Clear
+                </a>
+
+                {% endif %}
+
+
+            </form>
+
+        </section>
+
+
+
+        <!-- Decision List -->
+
+        <section class="history-section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        YOUR DECISIONS
+                    </span>
+
+                    <h2>
+                        Decision Records
+                    </h2>
+
+                </div>
+
+
+                <span class="record-count">
+                    {{ decisions|length }} records
+                </span>
+
+            </div>
+
+
+
+            {% if decisions %}
+
+
+            <div class="decision-table-wrapper">
+
+                <div class="decision-table">
+
+
+                    <div class="table-header">
+
+                        <span>
+                            Decision
+                        </span>
+
+                        <span>
+                            Category
+                        </span>
+
+                        <span>
+                            Status
+                        </span>
+
+                        <span>
+                            Score
+                        </span>
+
+                        <span>
+                            Confidence
+                        </span>
+
+                        <span>
+                            Date
+                        </span>
+
+                        <span>
+                            Action
+                        </span>
+
+                    </div>
+
+
+
+                    {% for decision in decisions %}
+
+                    <article class="table-row">
+
+
+                        <div class="decision-cell">
+
+                            <div class="decision-number">
+                                {{ "%02d"|format(loop.index) }}
+                            </div>
+
+                            <div class="decision-information">
+
+                                <h3>
+                                    {{ decision.title }}
+                                </h3>
+
+                                {% if decision.description %}
+
+                                <p>
+                                    {{ decision.description[:90] }}
+
+                                    {% if decision.description|length > 90 %}
+                                        ...
+                                    {% endif %}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="category-cell">
+
+                            <span class="category-badge">
+                                {{ decision.category or "General" }}
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="status-cell">
+
+                            {% if decision.status == "completed" %}
+
+                            <span class="status-badge completed">
+                                <span></span>
+                                Completed
+                            </span>
+
+                            {% else %}
+
+                            <span class="status-badge progress">
+                                <span></span>
+                                In Progress
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="score-cell">
+
+                            {% if decision.status == "completed" %}
+
+                            <strong>
+                                {{ "%.2f"|format(decision.final_score or 0) }}
+                            </strong>
+
+                            <small>
+                                / 10
+                            </small>
+
+                            {% else %}
+
+                            <span class="not-available">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="confidence-cell">
+
+                            {% if decision.status == "completed" %}
+
+                            <strong>
+                                {{ "%.1f"|format(decision.confidence_score or 0) }}%
+                            </strong>
+
+                            {% else %}
+
+                            <span class="not-available">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="date-cell">
+
+                            {% if decision.created_at %}
+
+                            <span>
+                                {{ decision.created_at.strftime('%d %b %Y') }}
+                            </span>
+
+                            {% else %}
+
+                            <span>
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="action-cell">
+
+                            <a
+                                href="{{ url_for('decisions.decision_detail', decision_id=decision.id) }}"
+                                class="view-button"
+                            >
+                                View
+                                <span>→</span>
+                            </a>
+
+                        </div>
+
+
+                    </article>
+
+                    {% endfor %}
+
+
+                </div>
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ◇
+                </div>
+
+                <h3>
+                    No decisions found
+                </h3>
+
+                <p>
+                    {% if search or selected_status != "all" or selected_category != "all" %}
+
+                    Try changing your search or filters.
+
+                    {% else %}
+
+                    Create your first structured decision
+                    to start building your LifeOS history.
+
+                    {% endif %}
+                </p>
+
+
+                <a
+                    href="{{ url_for('decisions.create_decision') }}"
+                    class="primary-button"
+                >
+                    ＋ Create Decision
+                </a>
+
+            </div>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+
+        <!-- Footer -->
+
+        <section class="page-actions">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="secondary-button"
+            >
+                ← Back to Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('analytics.dashboard') }}"
+                class="primary-button"
+            >
+                Open Analytics →
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

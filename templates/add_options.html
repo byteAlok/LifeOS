@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Add options to your LifeOS decision"
+    >
+
+    <title>Add Options | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/options.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for(
+                'decisions.decision_detail',
+                decision_id=decision.id
+            ) }}"
+            class="back-link"
+        >
+
+            <span>
+                ←
+            </span>
+
+            Back to Decision
+
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="options-page">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <header class="page-header">
+
+            <span class="eyebrow">
+                STEP 02 · OPTIONS
+            </span>
+
+
+            <h1>
+                What are your options?
+            </h1>
+
+
+            <p>
+                Add the choices you are considering for
+                <strong>{{ decision.title }}</strong>.
+            </p>
+
+        </header>
+
+
+
+        <!-- ================= FLASH MESSAGES ================= -->
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ================= MAIN GRID ================= -->
+
+        <section class="options-layout">
+
+
+            <!-- ================= ADD OPTION ================= -->
+
+            <div class="option-form-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        +
+                    </div>
+
+                    <div>
+
+                        <span>
+                            ADD OPTION
+                        </span>
+
+                        <h2>
+                            Add a choice
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'decisions.add_options',
+                        decision_id=decision.id
+                    ) }}"
+                    class="option-form"
+                >
+
+
+                    <div class="form-group">
+
+                        <label for="option_name">
+                            Option Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="option_name"
+                            name="option_name"
+                            placeholder="e.g. Python Development"
+                            maxlength="150"
+                            required
+                        >
+
+                        <small>
+                            Give this option a clear and specific name.
+                        </small>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="option_description">
+
+                            Description
+
+                            <span>
+                                Optional
+                            </span>
+
+                        </label>
+
+                        <textarea
+                            id="option_description"
+                            name="option_description"
+                            rows="5"
+                            placeholder="Briefly describe this option..."
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="add-btn"
+                    >
+
+                        Add Option
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- ================= OPTIONS LIST ================= -->
+
+            <div class="options-list-card">
+
+
+                <div class="list-heading">
+
+                    <div>
+
+                        <span>
+                            YOUR OPTIONS
+                        </span>
+
+                        <h2>
+                            Choices you're comparing
+                        </h2>
+
+                    </div>
+
+
+                    <div class="option-count">
+                        {{ options|length }}
+                    </div>
+
+                </div>
+
+
+
+                {% if options %}
+
+                    <div class="options-list">
+
+                        {% for option in options %}
+
+                            <article class="option-item">
+
+                                <div class="option-number">
+                                    {{ "%02d"|format(loop.index) }}
+                                </div>
+
+
+                                <div class="option-content">
+
+                                    <h3>
+                                        {{ option.option_name }}
+                                    </h3>
+
+
+                                    {% if option.description %}
+
+                                        <p>
+                                            {{ option.description }}
+                                        </p>
+
+                                    {% else %}
+
+                                        <p class="no-description">
+                                            No description added.
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-options">
+
+                        <div class="empty-icon">
+                            ◇
+                        </div>
+
+                        <h3>
+                            No options added yet
+                        </h3>
+
+                        <p>
+                            Add at least two options to
+                            compare your choices.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= NEXT STEP ================= -->
+
+        <section class="next-section">
+
+            <div class="next-icon">
+                03
+            </div>
+
+
+            <div class="next-content">
+
+                <span>
+                    NEXT STEP
+                </span>
+
+                <h2>
+                    Define what matters
+                </h2>
+
+                <p>
+                    After adding your options, LifeOS will
+                    help you define the criteria that matter
+                    most to your decision.
+                </p>
+
+            </div>
+
+
+            {% if options|length >= 2 %}
+
+                <a
+                    href="{{ url_for(
+                        'criteria.manage_criteria',
+                        decision_id=decision.id
+                    ) }}"
+                    class="next-btn"
+                >
+
+                    Continue
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+            {% else %}
+
+                <button
+                    type="button"
+                    class="next-btn disabled"
+                    disabled
+                >
+
+                    Add 2+ Options
+
+                </button>
+
+            {% endif %}
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

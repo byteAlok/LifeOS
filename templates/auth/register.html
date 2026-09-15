@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/auth.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <!-- Brand -->
+            <div class="brand">
+
+                <div class="brand-icon">
+                    L
+                </div>
+
+                <div>
+
+                    <h1>LifeOS</h1>
+
+                    <p>
+                        Personal Decision Intelligence
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Header -->
+            <div class="auth-header">
+
+                <h2>
+                    Create your account
+                </h2>
+
+                <p>
+                    Start making better decisions with LifeOS.
+                </p>
+
+            </div>
+
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="alert {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- Registration Form -->
+            <form
+                method="POST"
+                action="{{ url_for('auth.register') }}"
+                class="auth-form"
+            >
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your name"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Minimum 8 characters"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="confirm_password">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+
+            <!-- Google Login -->
+            <a
+                href="{{ url_for('google_auth.google_login') }}"
+                class="oauth-btn google-btn"
+            >
+
+                <span class="google-icon">
+                    G
+                </span>
+
+                <span>
+                    Continue with Google
+                </span>
+
+            </a>
+
+
+            <!-- Login -->
+            <p class="switch-auth">
+
+                Already have an account?
+
+                <a href="{{ url_for('auth.login') }}">
+                    Login
+                </a>
+
+            </p>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

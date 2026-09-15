@@ -1,0 +1,1449 @@
+/* =========================================================
+   LIFEOS DASHBOARD
+   ========================================================= */
+
+:root {
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-soft: #f8f9fd;
+
+    --text: #172033;
+    --text-muted: #788297;
+    --text-light: #a1a9b8;
+
+    --border: #e7eaf1;
+
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-soft: #eef2ff;
+
+    --success: #10b981;
+    --success-soft: #ecfdf5;
+
+    --warning: #f59e0b;
+    --warning-soft: #fffbeb;
+
+    --purple: #8b5cf6;
+    --purple-soft: #f5f3ff;
+
+    --danger: #ef4444;
+
+    --dark: #111827;
+
+    --shadow-sm:
+        0 5px 20px rgba(17, 24, 39, 0.035);
+
+    --shadow-md:
+        0 12px 35px rgba(17, 24, 39, 0.07);
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            rgba(99, 102, 241, 0.07),
+            transparent 30%
+        ),
+        var(--bg);
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.sidebar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 250px;
+    height: 100vh;
+
+    padding: 28px 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--dark);
+
+    z-index: 100;
+
+    box-shadow:
+        8px 0 30px rgba(17, 24, 39, 0.08);
+}
+
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 10px 38px;
+}
+
+
+.brand-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    color: white;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 22px rgba(99, 102, 241, 0.28);
+}
+
+
+.brand-text h2 {
+    margin: 0;
+
+    color: white;
+
+    font-size: 20px;
+    font-weight: 750;
+}
+
+
+.brand-text span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #8993a7;
+
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.nav-item {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    color: #9ca3af;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.nav-icon {
+    width: 20px;
+
+    text-align: center;
+
+    font-size: 17px;
+}
+
+
+.nav-item:hover {
+    background: #1f2937;
+
+    color: white;
+
+    transform: translateX(2px);
+}
+
+
+.nav-item.active {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(99, 102, 241, 0.25),
+            rgba(139, 92, 246, 0.16)
+        );
+
+    color: white;
+
+    box-shadow:
+        inset 3px 0 0 var(--primary);
+}
+
+
+/* =========================================================
+   SIDEBAR USER
+   ========================================================= */
+
+.sidebar-bottom {
+    margin-top: auto;
+
+    border-top: 1px solid #252c3a;
+
+    padding: 20px 8px 5px;
+}
+
+
+.user-mini {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.avatar {
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.user-info {
+    min-width: 0;
+}
+
+
+.user-info strong {
+    display: block;
+
+    color: white;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.user-info span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7f899b;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.logout-link {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 18px;
+
+    padding: 8px 4px;
+
+    color: #9ca3af;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    transition: color 0.2s ease;
+}
+
+
+.logout-link:hover {
+    color: #f87171;
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main-content {
+    margin-left: 250px;
+
+    min-height: 100vh;
+
+    padding: 50px 55px 70px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.top-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 34px;
+}
+
+
+.eyebrow {
+    margin-bottom: 8px;
+
+    color: var(--primary);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.top-header h1 {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    line-height: 1.15;
+}
+
+
+.wave {
+    display: inline-block;
+
+    animation:
+        wave 2s ease-in-out infinite;
+
+    transform-origin: 70% 70%;
+}
+
+
+.subtitle {
+    margin-top: 9px;
+
+    color: var(--text-muted);
+
+    font-size: 14px;
+}
+
+
+.new-decision-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 12px 18px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #6d4df5
+        );
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    box-shadow:
+        0 9px 24px rgba(99, 102, 241, 0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.new-decision-btn:hover {
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 13px 28px rgba(99, 102, 241, 0.28);
+}
+
+
+.btn-icon {
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 35px;
+}
+
+
+.stat-card {
+    min-width: 0;
+
+    padding: 22px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #dce0ed;
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.stat-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+.stat-icon.success {
+    background: var(--success-soft);
+
+    color: var(--success);
+}
+
+
+.stat-icon.warning {
+    background: var(--warning-soft);
+
+    color: var(--warning);
+}
+
+
+.stat-icon.confidence {
+    background: var(--purple-soft);
+
+    color: var(--purple);
+}
+
+
+.stat-content {
+    min-width: 0;
+}
+
+
+.stat-content span {
+    display: block;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+}
+
+
+.stat-content strong {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 26px;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+
+.stat-content small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--text-light);
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   DECISION HEALTH
+   ========================================================= */
+
+.overview-section {
+    margin-bottom: 42px;
+}
+
+
+.overview-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-bottom: 17px;
+}
+
+
+.overview-header h2 {
+    margin: 0;
+
+    font-size: 21px;
+    font-weight: 750;
+}
+
+
+.overview-badge {
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: var(--success-soft);
+
+    color: #059669;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+}
+
+
+.health-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+.health-card {
+    padding: 22px;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.health-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+
+.health-label {
+    display: block;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+}
+
+
+.health-card-top strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 25px;
+    font-weight: 800;
+}
+
+
+.health-icon {
+    width: 39px;
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.health-icon.purple {
+    background: var(--purple-soft);
+
+    color: var(--purple);
+}
+
+
+.health-icon.orange {
+    background: var(--warning-soft);
+
+    color: var(--warning);
+}
+
+
+.progress-track {
+    width: 100%;
+    height: 7px;
+
+    margin-top: 19px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #edf0f5;
+}
+
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    transition:
+        width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+.health-card p {
+    margin-top: 14px;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+.focus-status {
+    min-height: 31px;
+
+    margin-top: 19px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #667085;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+.focus-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #cbd1dc;
+}
+
+
+.focus-dot.active {
+    background: var(--warning);
+
+    box-shadow:
+        0 0 0 4px rgba(245, 158, 11, 0.1);
+}
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 21px;
+    font-weight: 750;
+}
+
+
+.text-action {
+    color: var(--primary);
+
+    font-size: 12px;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+
+.text-action:hover {
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   DECISION LIST
+   ========================================================= */
+
+.decision-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.decision-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 1fr)
+        110px
+        115px
+        80px;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 18px 22px;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.decision-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #d9ddef;
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.decision-title-row {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+}
+
+
+.decision-title-row h3 {
+    margin: 0;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.status {
+    flex-shrink: 0;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+.status.completed {
+    background: var(--success-soft);
+
+    color: #059669;
+}
+
+
+.status.progress {
+    background: #fff7ed;
+
+    color: #ea580c;
+}
+
+
+.decision-meta {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 6px;
+
+    color: #9aa2b1;
+
+    font-size: 10px;
+}
+
+
+.decision-description {
+    margin: 8px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+.decision-score {
+    text-align: center;
+}
+
+
+.score-value {
+    color: var(--text);
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+.decision-score span,
+.decision-confidence span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9aa2b1;
+
+    font-size: 9px;
+}
+
+
+.score-pending {
+    color: #b0b6c2;
+
+    font-size: 25px;
+}
+
+
+.decision-confidence {
+    text-align: center;
+}
+
+
+.confidence-circle {
+    width: 48px;
+    height: 48px;
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 3px solid var(--primary);
+
+    border-radius: 50%;
+
+    background: #fafaff;
+}
+
+
+.confidence-circle strong {
+    color: var(--primary-dark);
+
+    font-size: 11px;
+}
+
+
+.confidence-circle.muted {
+    border-color: #dfe3eb;
+
+    background: white;
+}
+
+
+.confidence-circle.muted strong {
+    color: #a5adba;
+}
+
+
+.decision-action {
+    text-align: right;
+}
+
+
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 8px 11px;
+
+    border: 1px solid #e1e5ed;
+
+    border-radius: 8px;
+
+    color: #555f72;
+
+    text-decoration: none;
+
+    font-size: 10px;
+    font-weight: 650;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.view-btn:hover {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+}
+
+
+.view-btn span {
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    padding: 70px 30px;
+
+    text-align: center;
+
+    background: white;
+
+    border: 1px dashed #d9deea;
+
+    border-radius: 15px;
+}
+
+
+.empty-icon {
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 23px;
+}
+
+
+.empty-state h3 {
+    margin-bottom: 7px;
+
+    font-size: 17px;
+}
+
+
+.empty-state p {
+    max-width: 400px;
+
+    margin: 0 auto 20px;
+
+    color: #8b94a5;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   INTELLIGENCE CARD
+   ========================================================= */
+
+.intelligence-card {
+    margin-top: 36px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 18px;
+
+    padding: 26px;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #151a2d,
+            #252a4b
+        );
+
+    color: white;
+
+    box-shadow:
+        0 15px 40px rgba(17, 24, 39, 0.14);
+}
+
+
+.intelligence-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.09);
+
+    color: #c4b5fd;
+
+    font-size: 21px;
+}
+
+
+.intelligence-card .eyebrow {
+    color: #a5b4fc;
+}
+
+
+.intelligence-card h3 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 650;
+}
+
+
+.intelligence-card p:last-child {
+    max-width: 700px;
+
+    margin: 7px 0 0;
+
+    color: #aeb5c9;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes wave {
+
+    0% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(14deg);
+    }
+
+    20% {
+        transform: rotate(-8deg);
+    }
+
+    30% {
+        transform: rotate(14deg);
+    }
+
+    40% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+
+    60%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    .main-content {
+        padding: 40px 35px 60px;
+    }
+
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .health-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .focus-card {
+        grid-column: 1 / -1;
+    }
+
+}
+
+
+@media (max-width: 950px) {
+
+    .sidebar {
+        width: 76px;
+
+        padding: 22px 10px;
+    }
+
+
+    .brand {
+        justify-content: center;
+
+        padding:
+            0 0 32px;
+    }
+
+
+    .brand-text {
+        display: none;
+    }
+
+
+    .nav-item {
+        justify-content: center;
+
+        padding: 13px;
+    }
+
+
+    .nav-item span:last-child {
+        display: none;
+    }
+
+
+    .user-info,
+    .logout-link {
+        display: none;
+    }
+
+
+    .user-mini {
+        justify-content: center;
+    }
+
+
+    .main-content {
+        margin-left: 76px;
+    }
+
+}
+
+
+@media (max-width: 750px) {
+
+    .main-content {
+        padding:
+            30px 20px 50px;
+    }
+
+
+    .top-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 20px;
+    }
+
+
+    .top-header h1 {
+        font-size: 29px;
+    }
+
+
+    .new-decision-btn {
+        width: 100%;
+    }
+
+
+    .health-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .focus-card {
+        grid-column: auto;
+    }
+
+
+    .decision-card {
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+    }
+
+
+    .decision-score,
+    .decision-confidence {
+        text-align: left;
+    }
+
+
+    .confidence-circle {
+        margin: 0;
+    }
+
+
+    .decision-action {
+        text-align: left;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .sidebar {
+        width: 62px;
+    }
+
+
+    .main-content {
+        margin-left: 62px;
+
+        padding:
+            25px 15px 45px;
+    }
+
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+
+    .stat-card {
+        padding: 18px;
+    }
+
+
+    .top-header h1 {
+        font-size: 25px;
+    }
+
+
+    .intelligence-card {
+        padding: 20px;
+
+        gap: 13px;
+    }
+
+
+    .intelligence-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+}
+
+/* Decision section actions */
+
+.decision-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.decision-actions .text-action {
+    text-decoration: none;
+}

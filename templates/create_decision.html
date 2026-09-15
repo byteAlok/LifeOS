@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Create a new decision with LifeOS"
+    >
+
+    <title>Create Decision | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/create_decision.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-link"
+        >
+            <span>←</span>
+            Dashboard
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="create-page">
+
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                NEW DECISION
+            </span>
+
+            <h1>
+                What are you deciding?
+            </h1>
+
+            <p>
+                Start by describing the decision you want
+                LifeOS to help you evaluate.
+            </p>
+
+        </section>
+
+
+
+        <!-- ================= FLASH MESSAGES ================= -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ================= DECISION FORM ================= -->
+
+        <section class="decision-form-card">
+
+
+            <form
+                method="POST"
+                action="{{ url_for('decisions.create_decision') }}"
+                class="decision-form"
+            >
+
+
+                <!-- ================= DECISION TITLE ================= -->
+
+                <div class="form-group">
+
+                    <label for="title">
+                        Decision Title
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="Example: Should I choose Python or Java?"
+                        maxlength="200"
+                        autocomplete="off"
+                        required
+                    >
+
+                    <span class="field-hint">
+                        Give your decision a clear and specific name.
+                    </span>
+
+                </div>
+
+
+
+                <!-- ================= CATEGORY ================= -->
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                    >
+
+                        <option value="">
+                            Select a category
+                        </option>
+
+                        <option value="Career">
+                            Career
+                        </option>
+
+                        <option value="Education">
+                            Education
+                        </option>
+
+                        <option value="Finance">
+                            Finance
+                        </option>
+
+                        <option value="Technology">
+                            Technology
+                        </option>
+
+                        <option value="Purchase">
+                            Purchase
+                        </option>
+
+                        <option value="Personal">
+                            Personal
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <span class="field-hint">
+                        Choose the area this decision belongs to.
+                    </span>
+
+                </div>
+
+
+
+                <!-- ================= DESCRIPTION ================= -->
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Describe the decision
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="6"
+                        maxlength="2000"
+                        placeholder="Explain what you are trying to decide, what matters to you, and any important constraints..."
+                    ></textarea>
+
+                    <span class="field-hint">
+                        More context will help LifeOS structure
+                        the decision later.
+                    </span>
+
+                </div>
+
+
+
+                <!-- ================= INTELLIGENCE TIP ================= -->
+
+                <div class="decision-tip">
+
+                    <div class="tip-icon">
+                        ✦
+                    </div>
+
+                    <div class="tip-content">
+
+                        <strong>
+                            Decision Intelligence Tip
+                        </strong>
+
+                        <p>
+                            Don't worry about knowing the answer yet.
+                            LifeOS will help you break the decision
+                            into options, criteria, weights and risks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= FORM ACTIONS ================= -->
+
+                <div class="form-actions">
+
+
+                    <a
+                        href="{{ url_for('dashboard') }}"
+                        class="cancel-btn"
+                    >
+                        ← Cancel
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="continue-btn"
+                    >
+
+                        Continue
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

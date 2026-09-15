@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Score your decision options using LifeOS decision criteria."
+    >
+
+    <title>Scoring | LifeOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/scoring.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+        >
+
+            <div class="brand-icon">
+                L
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    LifeOS
+                </strong>
+
+                <span>
+                    Decision Intelligence
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('criteria.manage_criteria', decision_id=decision.id) }}"
+            class="back-link"
+        >
+            ← Criteria
+        </a>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="scoring-page">
+
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <section class="page-header">
+
+            <span class="eyebrow">
+                STEP 03 · SCORING
+            </span>
+
+            <h1>
+                Score your options
+            </h1>
+
+            <p>
+                Rate each option against every criterion
+                from 0 to 10.
+            </p>
+
+        </section>
+
+
+
+        <!-- ================= DECISION CONTEXT ================= -->
+
+        <section class="decision-context">
+
+            <div class="context-icon">
+                ◈
+            </div>
+
+            <div class="context-content">
+
+                <span>
+                    YOUR DECISION
+                </span>
+
+                <strong>
+                    {{ decision.title }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FLASH MESSAGES ================= -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="alert {{ category }}">
+
+                            <span class="alert-icon">
+
+                                {% if category == "success" %}
+                                    ✓
+                                {% else %}
+                                    !
+                                {% endif %}
+
+                            </span>
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ================= SCORING CARD ================= -->
+
+        <section class="scoring-card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="section-label">
+                        OPTION SCORING
+                    </span>
+
+                    <h2>
+                        Evaluate each option
+                    </h2>
+
+                    <p>
+                        Give every option a score between
+                        0 and 10 for each criterion.
+                    </p>
+
+                </div>
+
+
+                <div class="weight-badge">
+
+                    <strong>
+                        {{ "%.0f"|format(total_weight) }}%
+                    </strong>
+
+                    <span>
+                        weighted
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= SCORE GUIDE ================= -->
+
+            <div class="score-guide">
+
+                <div class="guide-icon">
+                    ?
+                </div>
+
+                <div>
+
+                    <strong>
+                        How scoring works
+                    </strong>
+
+                    <p>
+                        0 means very poor and 10 means excellent
+                        for that criterion.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= FORM ================= -->
+
+            <form
+                method="POST"
+                action="{{ url_for('scoring.manage_scoring', decision_id=decision.id) }}"
+                class="scoring-form"
+            >
+
+
+                {% for option in options %}
+
+
+                    <div class="option-block">
+
+
+                        <!-- OPTION HEADER -->
+
+                        <div class="option-header">
+
+                            <div class="option-number">
+                                {{ "%02d"|format(loop.index) }}
+                            </div>
+
+
+                            <div class="option-info">
+
+                                <h3>
+                                    {{ option.option_name }}
+                                </h3>
+
+                                {% if option.description %}
+
+                                    <p>
+                                        {{ option.description }}
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- CRITERIA -->
+
+                        <div class="criteria-grid">
+
+
+                            {% for criterion in criteria_list %}
+
+                                {% set current_score = score_map.get((option.id, criterion.id), '') %}
+
+
+                                <div class="score-item">
+
+
+                                    <div class="criterion-info">
+
+                                        <div class="criterion-title">
+
+                                            <strong>
+                                                {{ criterion.name }}
+                                            </strong>
+
+                                            <span>
+                                                {{ "%.0f"|format(criterion.weight|float) }}%
+                                            </span>
+
+                                        </div>
+
+
+                                        {% if criterion.description %}
+
+                                            <p>
+                                                {{ criterion.description }}
+                                            </p>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <div class="score-input-wrapper">
+
+                                        <input
+                                            type="number"
+                                            name="score_{{ option.id }}_{{ criterion.id }}"
+                                            min="0"
+                                            max="10"
+                                            step="0.1"
+                                            value="{{ current_score }}"
+                                            placeholder="0 - 10"
+                                            required
+                                        >
+
+                                        <span>
+                                            / 10
+                                        </span>
+
+                                    </div>
+
+
+                                </div>
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+
+                <!-- ================= FORM ACTIONS ================= -->
+
+                <div class="form-actions">
+
+
+                    <a
+                        href="{{ url_for('criteria.manage_criteria', decision_id=decision.id) }}"
+                        class="back-btn"
+                    >
+                        ← Back to Criteria
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+
+                        Save Scores
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+
+        <!-- ================= SCORING NOTE ================= -->
+
+        <section class="scoring-note">
+
+            <div class="note-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <strong>
+                    Decision Intelligence
+                </strong>
+
+                <p>
+                    LifeOS will combine your scores with the
+                    importance weights to calculate a weighted
+                    result. Your scores represent your judgment;
+                    LifeOS structures the comparison.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>
