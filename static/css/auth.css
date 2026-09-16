@@ -692,3 +692,56 @@ body {
     opacity: 0;
     transform: translateY(-8px);
 }
+
+/* Verification help */
+.verification-help {
+    margin: 18px 0 24px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.verification-help a {
+    margin-left: 4px;
+    color: #673de6;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        color 0.2s ease,
+        text-decoration 0.2s ease;
+}
+
+.verification-help a:hover {
+    color: #5125d8;
+    text-decoration: underline;
+}
+
+
+/* Google G logo */
+.google-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    font-size: 22px;
+    font-weight: 700;
+    font-family: Arial, sans-serif;
+
+    background: conic-gradient(
+        from -45deg,
+        #4285f4 0deg 90deg,
+        #34a853 90deg 180deg,
+        #fbbc05 180deg 270deg,
+        #ea4335 270deg 360deg
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+    line-height: 1;
+}

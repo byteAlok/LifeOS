@@ -3,7 +3,6 @@ import secrets
 import smtplib
 
 from datetime import datetime, timedelta
-
 from email.message import EmailMessage
 
 from flask import (
@@ -142,21 +141,90 @@ def register():
                 (
                     name,
                     email,
-                    password_hash
+                    password_hash,
+                    email_verified
                 )
-                VALUES (%s, %s, %s)
+                VALUES (%s, %s, %s, %s)
                 """,
                 (
                     name,
                     email,
-                    password_hash
+                    password_hash,
+                    False
+                )
+            )
+
+            user_id = cursor.lastrowid
+
+            # Invalidate any previous verification tokens.
+            cursor.execute(
+                """
+                UPDATE email_verification_tokens
+                SET used_at = NOW()
+                WHERE user_id = %s
+                AND used_at IS NULL
+                """,
+                (user_id,)
+            )
+
+            # Generate a cryptographically secure verification token.
+            raw_token = secrets.token_urlsafe(48)
+
+            token_hash = hashlib.sha256(
+                raw_token.encode("utf-8")
+            ).hexdigest()
+
+            expires_at = (
+                datetime.now()
+                + timedelta(hours=1)
+            )
+
+            cursor.execute(
+                """
+                INSERT INTO email_verification_tokens
+                (
+                    user_id,
+                    token_hash,
+                    expires_at
+                )
+                VALUES (%s, %s, %s)
+                """,
+                (
+                    user_id,
+                    token_hash,
+                    expires_at
                 )
             )
 
             connection.commit()
 
+            verification_url = url_for(
+                "auth.verify_email",
+                token=raw_token,
+                _external=True
+            )
+
+            email_sent = send_email_verification(
+                email,
+                name,
+                verification_url
+            )
+
+            if not email_sent:
+
+                flash(
+                    "Account created, but we could not send the "
+                    "verification email. Please use Resend Verification.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("auth.login")
+                )
+
             flash(
-                "Registration successful. Please login.",
+                "Registration successful. "
+                "Please check your email and verify your account.",
                 "success"
             )
 
@@ -244,7 +312,8 @@ def login():
                     name,
                     email,
                     password_hash,
-                    profile_picture
+                    profile_picture,
+                    email_verified
                 FROM users
                 WHERE email = %s
                 """,
@@ -270,6 +339,19 @@ def login():
                 flash(
                     "This account uses Google login. "
                     "Please continue with Google.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("auth.login")
+                )
+
+            # Block password login until the email is verified.
+            if not user["email_verified"]:
+
+                flash(
+                    "Please verify your email before logging in. "
+                    "Check your inbox for the verification link.",
                     "error"
                 )
 
@@ -334,6 +416,394 @@ def login():
     return render_template(
         "auth/login.html"
     )
+
+
+# ============================================================
+# VERIFY EMAIL
+# ============================================================
+
+@auth.route("/verify-email/<token>")
+def verify_email(token):
+
+    token_hash = hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+
+    connection = None
+    cursor = None
+
+    try:
+
+        connection = get_connection()
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                user_id,
+                expires_at,
+                used_at
+            FROM email_verification_tokens
+            WHERE token_hash = %s
+            LIMIT 1
+            """,
+            (token_hash,)
+        )
+
+        verification_record = cursor.fetchone()
+
+        if not verification_record:
+
+            flash(
+                "This email verification link is invalid.",
+                "error"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        if verification_record["used_at"] is not None:
+
+            flash(
+                "This email verification link has already been used.",
+                "error"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        if verification_record["expires_at"] < datetime.now():
+
+            flash(
+                "This email verification link has expired. "
+                "Please request a new verification email.",
+                "error"
+            )
+
+            return redirect(
+                url_for("auth.resend_verification")
+            )
+
+        # Mark the user's email as verified.
+        cursor.execute(
+            """
+            UPDATE users
+            SET email_verified = TRUE
+            WHERE id = %s
+            """,
+            (verification_record["user_id"],)
+        )
+
+        # Mark the verification token as used.
+        cursor.execute(
+            """
+            UPDATE email_verification_tokens
+            SET used_at = NOW()
+            WHERE id = %s
+            """,
+            (verification_record["id"],)
+        )
+
+        connection.commit()
+
+        flash(
+            "Email verified successfully. You can now login.",
+            "success"
+        )
+
+        return redirect(
+            url_for("auth.login")
+        )
+
+    except Exception as error:
+
+        if connection:
+            connection.rollback()
+
+        print(
+            "Email verification error:",
+            error
+        )
+
+        flash(
+            "Something went wrong while verifying your email.",
+            "error"
+        )
+
+        return redirect(
+            url_for("auth.login")
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ============================================================
+# RESEND VERIFICATION EMAIL
+# ============================================================
+
+@auth.route(
+    "/resend-verification",
+    methods=["GET", "POST"]
+)
+def resend_verification():
+
+    if request.method == "POST":
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        if not email:
+
+            flash(
+                "Please enter your email address.",
+                "error"
+            )
+
+            return redirect(
+                url_for("auth.resend_verification")
+            )
+
+        connection = None
+        cursor = None
+
+        try:
+
+            connection = get_connection()
+
+            cursor = connection.cursor(
+                dictionary=True
+            )
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password_hash,
+                    email_verified
+                FROM users
+                WHERE email = %s
+                LIMIT 1
+                """,
+                (email,)
+            )
+
+            user = cursor.fetchone()
+
+            # Use a generic message to avoid revealing
+            # whether an account exists.
+            if (
+                not user
+                or user["email_verified"]
+                or not user["password_hash"]
+            ):
+
+                flash(
+                    "If an unverified account exists for this email, "
+                    "a new verification link has been sent.",
+                    "success"
+                )
+
+                return redirect(
+                    url_for("auth.login")
+                )
+
+            # Invalidate previous unused verification tokens.
+            cursor.execute(
+                """
+                UPDATE email_verification_tokens
+                SET used_at = NOW()
+                WHERE user_id = %s
+                AND used_at IS NULL
+                """,
+                (user["id"],)
+            )
+
+            # Generate a new secure token.
+            raw_token = secrets.token_urlsafe(48)
+
+            token_hash = hashlib.sha256(
+                raw_token.encode("utf-8")
+            ).hexdigest()
+
+            expires_at = (
+                datetime.now()
+                + timedelta(hours=1)
+            )
+
+            cursor.execute(
+                """
+                INSERT INTO email_verification_tokens
+                (
+                    user_id,
+                    token_hash,
+                    expires_at
+                )
+                VALUES (%s, %s, %s)
+                """,
+                (
+                    user["id"],
+                    token_hash,
+                    expires_at
+                )
+            )
+
+            connection.commit()
+
+            verification_url = url_for(
+                "auth.verify_email",
+                token=raw_token,
+                _external=True
+            )
+
+            email_sent = send_email_verification(
+                user["email"],
+                user["name"],
+                verification_url
+            )
+
+            if not email_sent:
+
+                flash(
+                    "Unable to send the verification email. "
+                    "Please try again later.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("auth.resend_verification")
+                )
+
+            flash(
+                "If an unverified account exists for this email, "
+                "a new verification link has been sent.",
+                "success"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        except Exception as error:
+
+            if connection:
+                connection.rollback()
+
+            print(
+                "Resend verification error:",
+                error
+            )
+
+            flash(
+                "Something went wrong. Please try again.",
+                "error"
+            )
+
+            return redirect(
+                url_for("auth.resend_verification")
+            )
+
+        finally:
+
+            if cursor:
+                cursor.close()
+
+            if connection:
+                connection.close()
+
+    return render_template(
+        "auth/resend_verification.html"
+    )
+
+
+# ============================================================
+# SEND EMAIL VERIFICATION
+# ============================================================
+
+def send_email_verification(
+    recipient_email,
+    recipient_name,
+    verification_url
+):
+
+    try:
+
+        message = EmailMessage()
+
+        message["Subject"] = (
+            "Verify Your LifeOS Email"
+        )
+
+        message["From"] = Config.MAIL_USERNAME
+
+        message["To"] = recipient_email
+
+        message.set_content(
+            f"""
+Hello {recipient_name},
+
+Welcome to LifeOS.
+
+Please verify your email address by clicking the link below:
+
+{verification_url}
+
+This verification link will expire in 1 hour.
+
+If you did not create a LifeOS account, you can safely ignore this email.
+
+Regards,
+LifeOS Team
+"""
+        )
+
+        with smtplib.SMTP(
+            Config.MAIL_SERVER,
+            Config.MAIL_PORT
+        ) as smtp:
+
+            smtp.ehlo()
+
+            if Config.MAIL_USE_TLS:
+
+                smtp.starttls()
+
+                smtp.ehlo()
+
+            smtp.login(
+                Config.MAIL_USERNAME,
+                Config.MAIL_PASSWORD
+            )
+
+            smtp.send_message(
+                message
+            )
+
+        return True
+
+    except Exception as error:
+
+        print(
+            "Email verification error:",
+            error
+        )
+
+        return False
 
 
 # ============================================================

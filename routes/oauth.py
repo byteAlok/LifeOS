@@ -1,4 +1,11 @@
-from flask import Blueprint, redirect, url_for, session, flash
+from flask import (
+    Blueprint,
+    redirect,
+    url_for,
+    session,
+    flash
+)
+
 from authlib.integrations.flask_client import OAuth
 
 from config import Config
@@ -71,7 +78,10 @@ def google_callback():
         email = userinfo.get("email")
         name = userinfo.get("name")
         picture = userinfo.get("picture")
-        email_verified = userinfo.get("email_verified", False)
+        email_verified = userinfo.get(
+            "email_verified",
+            False
+        )
 
         if not google_id or not email:
 
@@ -82,6 +92,7 @@ def google_callback():
 
             return redirect(url_for("auth.login"))
 
+        # Only allow Google accounts with a verified email address.
         if not email_verified:
 
             flash(
@@ -95,7 +106,9 @@ def google_callback():
 
         connection = get_connection()
 
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor(
+            dictionary=True
+        )
 
         # Check whether this Google account is already linked.
         cursor.execute(
@@ -121,6 +134,37 @@ def google_callback():
 
         if linked_user:
 
+            # Google has verified the email address.
+            cursor.execute(
+                """
+                UPDATE users
+                SET email_verified = TRUE
+                WHERE id = %s
+                """,
+                (
+                    linked_user["id"],
+                )
+            )
+
+            # Update profile picture if Google provides one.
+            if picture:
+
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET profile_picture = %s
+                    WHERE id = %s
+                    """,
+                    (
+                        picture,
+                        linked_user["id"]
+                    )
+                )
+
+                linked_user["profile_picture"] = picture
+
+            connection.commit()
+
             user = linked_user
 
         else:
@@ -143,7 +187,8 @@ def google_callback():
 
             if existing_user:
 
-                # Link the verified Google account to the existing user.
+                # Link the verified Google account
+                # to the existing LifeOS account.
                 cursor.execute(
                     """
                     INSERT INTO oauth_accounts
@@ -158,6 +203,19 @@ def google_callback():
                         existing_user["id"],
                         "google",
                         google_id
+                    )
+                )
+
+                # Mark the user's email as verified because
+                # Google has confirmed the email address.
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET email_verified = TRUE
+                    WHERE id = %s
+                    """,
+                    (
+                        existing_user["id"],
                     )
                 )
 
@@ -192,15 +250,17 @@ def google_callback():
                         name,
                         email,
                         password_hash,
-                        profile_picture
+                        profile_picture,
+                        email_verified
                     )
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s)
                     """,
                     (
                         name or "Google User",
                         email,
                         None,
-                        picture
+                        picture,
+                        True
                     )
                 )
 
@@ -238,28 +298,37 @@ def google_callback():
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
         session["user_email"] = user["email"]
-        session["profile_picture"] = user["profile_picture"]
+        session["profile_picture"] = (
+            user["profile_picture"]
+        )
 
         flash(
             "Google login successful.",
             "success"
         )
 
-        return redirect(url_for("dashboard"))
+        return redirect(
+            url_for("dashboard")
+        )
 
     except Exception as error:
 
         if connection:
             connection.rollback()
 
-        print("Google login error:", error)
+        print(
+            "Google login error:",
+            error
+        )
 
         flash(
             "Google login failed. Please try again.",
             "error"
         )
 
-        return redirect(url_for("auth.login"))
+        return redirect(
+            url_for("auth.login")
+        )
 
     finally:
 

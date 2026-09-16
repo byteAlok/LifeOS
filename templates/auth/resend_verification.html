@@ -10,7 +10,12 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Login | LifeOS</title>
+    <meta
+        name="description"
+        content="Resend LifeOS email verification link"
+    >
+
+    <title>Verify Email | LifeOS</title>
 
     <link
         rel="stylesheet"
@@ -23,6 +28,7 @@
     ></script>
 
 </head>
+
 
 <body>
 
@@ -54,11 +60,12 @@
             <div class="auth-header">
 
                 <h2>
-                    Welcome back
+                    Verify your email
                 </h2>
 
                 <p>
-                    Sign in to continue to your LifeOS.
+                    Enter your registered email address
+                    to receive a new verification link.
                 </p>
 
             </div>
@@ -82,10 +89,10 @@
             {% endwith %}
 
 
-            <!-- Login Form -->
+            <!-- Resend Verification Form -->
             <form
                 method="POST"
-                action="{{ url_for('auth.login') }}"
+                action="{{ url_for('auth.resend_verification') }}"
                 class="auth-form"
             >
 
@@ -107,88 +114,23 @@
                 </div>
 
 
-                <div class="form-group">
-
-                    <div class="label-row">
-
-                        <label for="password">
-                            Password
-                        </label>
-
-                        <a href="{{ url_for('auth.forgot_password') }}">
-                            Forgot password?
-                        </a>
-
-                    </div>
-
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- Email Verification Help -->
-                <p class="verification-help">
-
-                    <span>
-                        Didn't receive the verification email?
-                    </span>
-
-                    <a
-                        href="{{ url_for('auth.resend_verification') }}"
-                    >
-                        Resend Verification Email
-                    </a>
-
-                </p>
-
-
                 <button
                     type="submit"
                     class="primary-btn"
                 >
-                    Login
+                    Send Verification Link
                 </button>
 
             </form>
 
 
-            <!-- Divider -->
-            <div class="divider">
-                <span>OR</span>
-            </div>
-
-
-            <!-- Google Login -->
-            <a
-                href="{{ url_for('google_auth.google_login') }}"
-                class="oauth-btn google-btn"
-            >
-
-                <span class="google-icon">
-                    G
-                </span>
-
-                <span>
-                    Continue with Google
-                </span>
-
-            </a>
-
-
-            <!-- Register -->
+            <!-- Back to Login -->
             <p class="switch-auth">
 
-                Don't have an account?
+                Already verified?
 
-                <a href="{{ url_for('auth.register') }}">
-                    Create Account
+                <a href="{{ url_for('auth.login') }}">
+                    Login
                 </a>
 
             </p>
