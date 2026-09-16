@@ -177,8 +177,7 @@ def manage_criteria(decision_id):
                 id,
                 name,
                 description,
-                weight,
-                created_at
+                weight
             FROM criteria
             WHERE decision_id = %s
             ORDER BY id ASC
